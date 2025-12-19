@@ -9,6 +9,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import transportRoutes from "./routes/transportRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 import dbConnect from "./config/db.js";
 import path from "path";
 
@@ -48,6 +49,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/transport", transportRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/community", communityRoutes);
+app.use("/api/tasks", taskRoutes);
 
 const PORT = process.env.PORT || 8080;
 

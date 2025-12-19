@@ -30,7 +30,7 @@ const AvailableDeliveries = () => {
             );
 
             if (data.success) {
-                setOrders(data.orders);
+                setDeliveries(data.orders);
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
@@ -121,7 +121,7 @@ const AvailableDeliveries = () => {
                             Available Deliveries
                         </h3>
 
-                        {orders.length === 0 ? (
+                        {deliveries.length === 0 ? (
                             <div className="card shadow-sm">
                                 <div className="card-body text-center py-5">
                                     <h5 className="text-muted">No deliveries available</h5>
@@ -132,7 +132,7 @@ const AvailableDeliveries = () => {
                             </div>
                         ) : (
                             <div className="row g-4">
-                                {orders.map((order) => (
+                                {deliveries.map((order) => (
                                     <div className="col-12 col-lg-6" key={order._id}>
                                         <div className="card shadow-sm h-100 delivery-card">
                                             <div className="card-body">

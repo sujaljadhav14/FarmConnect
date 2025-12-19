@@ -7,6 +7,7 @@ import {
   CartCheck,
   Basket3,
   People,
+  CalendarCheck,
 } from "react-bootstrap-icons";
 
 const FarmerMenu = () => {
@@ -22,6 +23,11 @@ const FarmerMenu = () => {
       name: "Community",
       icon: <People className="me-2" />,
       path: "/farmer/community",
+    },
+    {
+      name: "Farm Calendar",
+      icon: <CalendarCheck className="me-2" />,
+      path: "/farmer/calendar",
     },
     {
       name: "My Crops",
