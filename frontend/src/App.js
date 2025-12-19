@@ -23,6 +23,7 @@ import AddCrop from "./pages/farmer/AddCrop";
 import MyCrops from "./pages/farmer/MyCrops";
 import FarmerMyOrders from "./pages/farmer/MyOrders";
 import OrderDetails from "./pages/farmer/OrderDetails";
+import CommunityPage from "./pages/farmer/CommunityPage";
 
 // Trader Pages
 import BrowseCrops from "./pages/trader/BrowseCrops";
@@ -106,6 +107,14 @@ const App = () => {
           element={
             <RoleProtectedRoute role="farmer">
               <OrderDetails />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/farmer/community"
+          element={
+            <RoleProtectedRoute role="farmer">
+              <CommunityPage />
             </RoleProtectedRoute>
           }
         />

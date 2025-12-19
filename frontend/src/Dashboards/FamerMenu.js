@@ -6,6 +6,7 @@ import {
   FileEarmarkText,
   CartCheck,
   Basket3,
+  People,
 } from "react-bootstrap-icons";
 
 const FarmerMenu = () => {
@@ -16,6 +17,11 @@ const FarmerMenu = () => {
       name: "Dashboard",
       icon: <Speedometer2 className="me-2" />,
       path: "/farmer/dashboard",
+    },
+    {
+      name: "Community",
+      icon: <People className="me-2" />,
+      path: "/farmer/community",
     },
     {
       name: "My Crops",

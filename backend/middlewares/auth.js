@@ -17,7 +17,8 @@ export const requireSignIn = (req, res, next) => {
 
     // Attach user info
     req.user = {
-      id: decoded.id,
+      id: decoded.id || decoded._id,
+      _id: decoded.id || decoded._id,
       role: decoded.role,
     };
 

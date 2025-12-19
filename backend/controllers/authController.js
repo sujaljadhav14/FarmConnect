@@ -5,7 +5,7 @@ import User from "../models/userModel.js";
 
 const createToken = (user) => {
   return jwt.sign(
-    { id: user._id, role: user.role }, // 👈 ADD ROLE HERE
+    { id: user._id.toString(), role: user.role }, // 👈 Ensure ID is string
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
