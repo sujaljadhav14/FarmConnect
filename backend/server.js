@@ -10,8 +10,10 @@ import transportRoutes from "./routes/transportRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
+import weatherRoutes from "./routes/weatherRoutes.js";
 import dbConnect from "./config/db.js";
 import path from "path";
+import { scheduleWeatherUpdates } from "./utils/weatherScheduler.js";
 
 dotenv.config();
 
@@ -50,6 +52,7 @@ app.use("/api/transport", transportRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/weather", weatherRoutes);
 
 const PORT = process.env.PORT || 8080;
 
@@ -58,3 +61,8 @@ server.listen(PORT, () => {
 });
 
 dbConnect();
+
+// Start weather update scheduler
+scheduleWeatherUpdates(io);
+console.log("Weather scheduler initialized");
+

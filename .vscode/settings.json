@@ -1,0 +1,31 @@
+{
+  "python.analysis.diagnosticMode": "off",
+  "python.analysis.indexing": false,
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.exclude": ["**/*.ipynb"],
+  "python.linting.enabled": false,
+  "python.linting.pylintEnabled": false,
+  "pylance.analysis.diagnosticMode": "off",
+  "pylance.analysis.typeCheckingMode": "off",
+  "pylance.analysis.indexing": false,
+  "files.associations": {
+    "*.ipynb": "json"
+  },
+  "files.exclude": {
+    "**/.ipynb_checkpoints": true,
+    "**/__pycache__": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": null,
+    "editor.formatOnSave": false
+  },
+  "[jupyter]": {
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {}
+  },
+  "notebook.formatOnSave.enabled": false,
+  "[notebook]": {
+    "editor.formatOnSave": false
+  },
+  "extensions.ignoreRecommendations": false
+}
