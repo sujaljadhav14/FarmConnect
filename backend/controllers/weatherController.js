@@ -101,13 +101,17 @@ export const getWeatherByLocation = async (req, res) => {
             weatherResponse = weatherRes.data;
         }
 
-        // Get forecast data (5 day/3 hour forecast)
-        const forecastResponse = await axios.get(
-            `${OPENWEATHER_BASE_URL}/forecast?lat=${weatherResponse.coord.lat}&lon=${weatherResponse.coord.lon}&appid=${OPENWEATHER_API_KEY}&units=metric`
-        );
-
-        // Process forecast data
-        const forecastData = forecastResponse.data.list;
+        // Get forecast data (5 day/3 hour forecast) - optional
+        let forecastData = [];
+        try {
+            const forecastResponse = await axios.get(
+                `${OPENWEATHER_BASE_URL}/forecast?lat=${weatherResponse.coord.lat}&lon=${weatherResponse.coord.lon}&appid=${OPENWEATHER_API_KEY}&units=metric`
+            );
+            forecastData = forecastResponse.data.list || [];
+        } catch (forecastErr) {
+            console.warn('Warning: failed to fetch forecast data for', weatherResponse.name || location, forecastErr.message);
+            forecastData = [];
+        }
         const dailyForecasts = {};
 
         forecastData.forEach((item) => {
@@ -155,7 +159,7 @@ export const getWeatherByLocation = async (req, res) => {
             }));
 
         // Process hourly forecast (next 24 hours)
-        const hourlyForecast = forecastData.slice(0, 8).map((item) => ({
+        const hourlyForecast = (forecastData || []).slice(0, 8).map((item) => ({
             time: new Date(item.dt * 1000).toLocaleTimeString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",

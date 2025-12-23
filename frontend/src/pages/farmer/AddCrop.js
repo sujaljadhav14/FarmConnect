@@ -17,10 +17,9 @@ const AddCrop = () => {
         quantity: "",
         unit: "kg",
         pricePerUnit: "",
-        quality: "A",
+        quality: "Good",
         harvestDate: "",
         location: "",
-        availabilityDate: "",
         description: "",
     });
 
@@ -53,9 +52,6 @@ const AddCrop = () => {
                     quality: crop.quality,
                     harvestDate: crop.harvestDate.split("T")[0],
                     location: crop.location,
-                    availabilityDate: crop.availabilityDate
-                        ? crop.availabilityDate.split("T")[0]
-                        : "",
                     description: crop.description || "",
                 });
             }
@@ -224,10 +220,10 @@ const AddCrop = () => {
                                                 value={formData.quality}
                                                 onChange={handleChange}
                                             >
-                                                <option value="A+">A+ (Premium)</option>
-                                                <option value="A">A (Good)</option>
-                                                <option value="B">B (Average)</option>
-                                                <option value="C">C (Standard)</option>
+                                                <option value="Excellent">Excellent</option>
+                                                <option value="Good">Good</option>
+                                                <option value="Average">Average</option>
+                                                <option value="Standard">Standard</option>
                                             </select>
                                         </div>
 
@@ -259,18 +255,6 @@ const AddCrop = () => {
                                                 value={formData.location}
                                                 onChange={handleChange}
                                                 required
-                                            />
-                                        </div>
-
-                                        {/* Availability Date */}
-                                        <div className="col-md-6 mb-3">
-                                            <label className="form-label">Availability Date</label>
-                                            <input
-                                                type="date"
-                                                name="availabilityDate"
-                                                className="form-control"
-                                                value={formData.availabilityDate}
-                                                onChange={handleChange}
                                             />
                                         </div>
 

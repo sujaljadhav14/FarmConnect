@@ -30,6 +30,19 @@ app.use(express.json());
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
 
+// Log incoming weather API requests for debugging
+app.use("/api/weather", (req, res, next) => {
+  try {
+    console.log("[Weather API] Incoming request:", req.method, req.originalUrl);
+    if (req.method === "POST" || req.method === "PUT") {
+      console.log("[Weather API] Body:", JSON.stringify(req.body));
+    }
+  } catch (err) {
+    console.error("[Weather API] Logging error:", err);
+  }
+  next();
+});
+
 // Set socketio to app instance
 app.set("socketio", io);
 
