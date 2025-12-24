@@ -229,14 +229,15 @@ export const acceptOrder = async (req, res) => {
         await order.save();
 
         const populatedOrder = await Order.findById(orderId)
-            .populate("cropId", "cropName category unit")
-            .populate("traderId", "name phone");
+    .populate("cropId", "cropName category unit")
+    .populate("farmerId", "name phone")
+    .populate("traderId", "name phone");
 
-        res.status(200).json({
-            success: true,
-            message: "Order accepted successfully",
-            order: populatedOrder,
-        });
+res.status(200).json({
+    success: true,
+    message: "Order accepted successfully",
+    order: populatedOrder,   // 👈 THIS IS WHAT FRONTEND NEEDS
+});
     } catch (error) {
         console.error("Accept Order Error:", error);
         res.status(500).json({

@@ -6,6 +6,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
 import { Eye, CheckCircle, XCircle, BoxSeam } from "react-bootstrap-icons";
+import { generateOrderAgreement } from "../../utils/generateOrderAgreement";
+
 
 const FarmerMyOrders = () => {
     const navigate = useNavigate();
@@ -49,15 +51,20 @@ const FarmerMyOrders = () => {
                     {},
                     {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            Authorization: `Bearer ${auth?.token}`,
                         },
                     }
                 );
 
                 if (data.success) {
-                    toast.success("Order accepted successfully!");
-                    fetchMyOrders();
-                } else {
+    toast.success("Order accepted successfully!");
+
+    // ✅ THIS LINE CREATES & DOWNLOADS THE AGREEMENT PDF
+    generateOrderAgreement(data.order);
+
+    fetchMyOrders();
+}
+ else {
                     toast.error(data.message);
                 }
             } catch (error) {
@@ -287,63 +294,75 @@ const FarmerMyOrders = () => {
                                                             </small>
 
                                                             <div className="d-flex flex-column gap-2">
-                                                                {/* Pending: Accept/Reject */}
+  
+                                                                {/* Pending: Accept / Reject */}
                                                                 {order.orderStatus === "Pending" && (
                                                                     <>
-                                                                        <button
-                                                                            className="btn btn-sm btn-success"
-                                                                            onClick={() => handleAcceptOrder(order._id)}
-                                                                            disabled={actionLoading === order._id}
-                                                                        >
-                                                                            {actionLoading === order._id ? (
-                                                                                <span className="spinner-border spinner-border-sm" />
-                                                                            ) : (
-                                                                                <>
-                                                                                    <CheckCircle size={14} className="me-1" />
-                                                                                    Accept Order
-                                                                                </>
-                                                                            )}
-                                                                        </button>
-                                                                        <button
-                                                                            className="btn btn-sm btn-outline-danger"
-                                                                            onClick={() => handleRejectOrder(order._id)}
-                                                                            disabled={actionLoading === order._id}
-                                                                        >
-                                                                            <XCircle size={14} className="me-1" />
-                                                                            Reject Order
-                                                                        </button>
+                                                                    <button
+                                                                        className="btn btn-sm btn-success"
+                                                                        onClick={() => handleAcceptOrder(order._id)}
+                                                                        disabled={actionLoading === order._id}
+                                                                    >
+                                                                        {actionLoading === order._id ? (
+                                                                        <span className="spinner-border spinner-border-sm" />
+                                                                        ) : (
+                                                                        <>
+                                                                            <CheckCircle size={14} className="me-1" />
+                                                                            Accept Order
+                                                                        </>
+                                                                        )}
+                                                                    </button>
+
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-danger"
+                                                                        onClick={() => handleRejectOrder(order._id)}
+                                                                        disabled={actionLoading === order._id}
+                                                                    >
+                                                                        <XCircle size={14} className="me-1" />
+                                                                        Reject Order
+                                                                    </button>
                                                                     </>
                                                                 )}
 
                                                                 {/* Accepted: Mark Ready */}
                                                                 {order.orderStatus === "Accepted" && (
                                                                     <button
-                                                                        className="btn btn-sm btn-primary"
-                                                                        onClick={() => handleMarkReady(order._id)}
-                                                                        disabled={actionLoading === order._id}
+                                                                    className="btn btn-sm btn-primary"
+                                                                    onClick={() => handleMarkReady(order._id)}
+                                                                    disabled={actionLoading === order._id}
                                                                     >
-                                                                        {actionLoading === order._id ? (
-                                                                            <span className="spinner-border spinner-border-sm" />
-                                                                        ) : (
-                                                                            <>
-                                                                                <BoxSeam size={14} className="me-1" />
-                                                                                Mark Ready
-                                                                            </>
-                                                                        )}
+                                                                    {actionLoading === order._id ? (
+                                                                        <span className="spinner-border spinner-border-sm" />
+                                                                    ) : (
+                                                                        <>
+                                                                        <BoxSeam size={14} className="me-1" />
+                                                                        Mark Ready
+                                                                        </>
+                                                                    )}
                                                                     </button>
                                                                 )}
 
                                                                 {/* View Details */}
                                                                 <button
                                                                     className="btn btn-sm btn-outline-primary"
-                                                                    onClick={() =>
-                                                                        navigate(`/farmer/order/${order._id}`)
-                                                                    }
+                                                                    onClick={() => navigate(`/farmer/order/${order._id}`)}
                                                                 >
                                                                     <Eye size={14} className="me-1" />
                                                                     View Details
                                                                 </button>
-                                                            </div>
+
+                                                                {/* ✅ DOWNLOAD AGREEMENT BUTTON */}
+                                                                {["Accepted", "Ready for Pickup", "Delivered", "Completed"].includes(order.orderStatus) && (
+                                                                    <button
+                                                                    className="btn btn-sm btn-outline-success"
+                                                                    onClick={() => generateOrderAgreement(order)}
+                                                                    >
+                                                                    📄 Download Agreement
+                                                                    </button>
+                                                                )}
+
+                                                                </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
