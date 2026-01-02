@@ -17,7 +17,7 @@ const AddCrop = () => {
         quantity: "",
         unit: "kg",
         pricePerUnit: "",
-        quality: "Good",
+        quality: "A",
         harvestDate: "",
         location: "",
         description: "",
@@ -220,10 +220,10 @@ const AddCrop = () => {
                                                 value={formData.quality}
                                                 onChange={handleChange}
                                             >
-                                                <option value="Excellent">Excellent</option>
-                                                <option value="Good">Good</option>
-                                                <option value="Average">Average</option>
-                                                <option value="Standard">Standard</option>
+                                                <option value="A+">A+ (Premium)</option>
+                                                <option value="A">A (Good)</option>
+                                                <option value="B">B (Standard)</option>
+                                                <option value="C">C (Basic)</option>
                                             </select>
                                         </div>
 

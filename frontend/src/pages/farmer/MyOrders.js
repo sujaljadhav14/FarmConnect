@@ -57,14 +57,14 @@ const FarmerMyOrders = () => {
                 );
 
                 if (data.success) {
-    toast.success("Order accepted successfully!");
+                    toast.success("Order accepted successfully!");
 
-    // ✅ THIS LINE CREATES & DOWNLOADS THE AGREEMENT PDF
-    generateOrderAgreement(data.order);
+                    // ✅ THIS LINE CREATES & DOWNLOADS THE AGREEMENT PDF
+                    generateOrderAgreement(data.order);
 
-    fetchMyOrders();
-}
- else {
+                    fetchMyOrders();
+                }
+                else {
                     toast.error(data.message);
                 }
             } catch (error) {
@@ -138,11 +138,17 @@ const FarmerMyOrders = () => {
     const getStatusBadge = (status) => {
         const statusConfig = {
             Pending: { color: "warning", text: "⏳ Pending" },
+            "Farmer Agreed": { color: "info", text: "✍️ You Signed" },
+            "Both Agreed": { color: "primary", text: "🤝 Both Agreed" },
+            "Awaiting Advance": { color: "warning", text: "💰 Awaiting Payment" },
+            "Advance Paid": { color: "success", text: "✓ Advance Received" },
             Accepted: { color: "info", text: "✓ Accepted" },
             Rejected: { color: "danger", text: "✗ Rejected" },
             "Ready for Pickup": { color: "primary", text: "📦 Ready" },
+            "Transport Assigned": { color: "info", text: "🚛 Transport Assigned" },
             "In Transit": { color: "info", text: "🚚 In Transit" },
             Delivered: { color: "success", text: "✓ Delivered" },
+            "Awaiting Final Payment": { color: "warning", text: "💰 Awaiting Final" },
             Cancelled: { color: "secondary", text: "Cancelled" },
             Completed: { color: "success", text: "✓ Completed" },
         };
@@ -294,51 +300,58 @@ const FarmerMyOrders = () => {
                                                             </small>
 
                                                             <div className="d-flex flex-column gap-2">
-  
-                                                                {/* Pending: Accept / Reject */}
+
+                                                                {/* Pending: Sign Agreement / Reject */}
                                                                 {order.orderStatus === "Pending" && (
                                                                     <>
-                                                                    <button
-                                                                        className="btn btn-sm btn-success"
-                                                                        onClick={() => handleAcceptOrder(order._id)}
-                                                                        disabled={actionLoading === order._id}
-                                                                    >
-                                                                        {actionLoading === order._id ? (
-                                                                        <span className="spinner-border spinner-border-sm" />
-                                                                        ) : (
-                                                                        <>
+                                                                        <button
+                                                                            className="btn btn-sm btn-success"
+                                                                            onClick={() => navigate(`/farmer/agreement/${order._id}`)}
+                                                                        >
                                                                             <CheckCircle size={14} className="me-1" />
-                                                                            Accept Order
-                                                                        </>
-                                                                        )}
-                                                                    </button>
+                                                                            Sign Agreement
+                                                                        </button>
 
-                                                                    <button
-                                                                        className="btn btn-sm btn-outline-danger"
-                                                                        onClick={() => handleRejectOrder(order._id)}
-                                                                        disabled={actionLoading === order._id}
-                                                                    >
-                                                                        <XCircle size={14} className="me-1" />
-                                                                        Reject Order
-                                                                    </button>
+                                                                        <button
+                                                                            className="btn btn-sm btn-outline-danger"
+                                                                            onClick={() => handleRejectOrder(order._id)}
+                                                                            disabled={actionLoading === order._id}
+                                                                        >
+                                                                            <XCircle size={14} className="me-1" />
+                                                                            Reject Order
+                                                                        </button>
                                                                     </>
                                                                 )}
 
-                                                                {/* Accepted: Mark Ready */}
-                                                                {order.orderStatus === "Accepted" && (
+                                                                {/* Farmer Agreed: Waiting for Trader */}
+                                                                {order.orderStatus === "Farmer Agreed" && (
+                                                                    <div className="alert alert-info py-2 mb-0 small">
+                                                                        ⏳ Waiting for trader to confirm agreement
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Both Agreed: Waiting for Advance Payment */}
+                                                                {order.orderStatus === "Both Agreed" && (
+                                                                    <div className="alert alert-warning py-2 mb-0 small">
+                                                                        💰 Waiting for trader's 30% advance payment
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Advance Paid or Accepted: Mark Ready */}
+                                                                {(order.orderStatus === "Advance Paid" || order.orderStatus === "Accepted") && (
                                                                     <button
-                                                                    className="btn btn-sm btn-primary"
-                                                                    onClick={() => handleMarkReady(order._id)}
-                                                                    disabled={actionLoading === order._id}
+                                                                        className="btn btn-sm btn-primary"
+                                                                        onClick={() => handleMarkReady(order._id)}
+                                                                        disabled={actionLoading === order._id}
                                                                     >
-                                                                    {actionLoading === order._id ? (
-                                                                        <span className="spinner-border spinner-border-sm" />
-                                                                    ) : (
-                                                                        <>
-                                                                        <BoxSeam size={14} className="me-1" />
-                                                                        Mark Ready
-                                                                        </>
-                                                                    )}
+                                                                        {actionLoading === order._id ? (
+                                                                            <span className="spinner-border spinner-border-sm" />
+                                                                        ) : (
+                                                                            <>
+                                                                                <BoxSeam size={14} className="me-1" />
+                                                                                Mark Ready
+                                                                            </>
+                                                                        )}
                                                                     </button>
                                                                 )}
 
@@ -354,14 +367,14 @@ const FarmerMyOrders = () => {
                                                                 {/* ✅ DOWNLOAD AGREEMENT BUTTON */}
                                                                 {["Accepted", "Ready for Pickup", "Delivered", "Completed"].includes(order.orderStatus) && (
                                                                     <button
-                                                                    className="btn btn-sm btn-outline-success"
-                                                                    onClick={() => generateOrderAgreement(order)}
+                                                                        className="btn btn-sm btn-outline-success"
+                                                                        onClick={() => generateOrderAgreement(order)}
                                                                     >
-                                                                    📄 Download Agreement
+                                                                        📄 Download Agreement
                                                                     </button>
                                                                 )}
 
-                                                                </div>
+                                                            </div>
 
                                                         </div>
                                                     </div>

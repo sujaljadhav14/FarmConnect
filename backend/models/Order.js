@@ -45,7 +45,7 @@ const orderSchema = new mongoose.Schema(
         paymentMethod: {
             type: String,
             enum: ["Advance", "Full", "COD"],
-            default: "Full",
+            default: "Advance", // Default to 30/70 split
         },
         paymentStatus: {
             type: String,
@@ -56,16 +56,40 @@ const orderSchema = new mongoose.Schema(
             type: String,
             enum: [
                 "Pending",
-                "Accepted",
+                "Farmer Agreed",       // Farmer signed agreement
+                "Both Agreed",         // Both parties signed
+                "Awaiting Advance",    // Waiting for 30% payment
+                "Advance Paid",        // 30% received
+                "Accepted",            // Legacy - maps to Advance Paid
                 "Rejected",
                 "Ready for Pickup",
+                "Transport Assigned",  // Transport selected
                 "In Transit",
                 "Delivered",
+                "Awaiting Final Payment", // Waiting for 70% + transport
                 "Cancelled",
                 "Completed",
             ],
             default: "Pending",
         },
+        // Agreement Tracking
+        agreementId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Agreement",
+        },
+        agreementStatus: {
+            type: String,
+            enum: ["none", "pending_farmer", "pending_trader", "completed"],
+            default: "none",
+        },
+        // Payment Breakdown
+        advanceAmount: { type: Number, default: 0 },      // 30% of totalPrice
+        advancePaid: { type: Boolean, default: false },
+        finalAmount: { type: Number, default: 0 },        // 70% of totalPrice
+        finalPaid: { type: Boolean, default: false },
+        transportCost: { type: Number, default: 0 },      // Transport fee
+        transportPaid: { type: Boolean, default: false },
+        totalPayable: { type: Number, default: 0 },       // totalPrice + transportCost
         orderDate: {
             type: Date,
             default: Date.now,
@@ -96,6 +120,9 @@ const orderSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+// Note: Payment amounts (advanceAmount, finalAmount, totalPayable) are calculated
+// when the order is created or updated in the controller
 
 // Index for better query performance
 orderSchema.index({ farmerId: 1, orderStatus: 1 });

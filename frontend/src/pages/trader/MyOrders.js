@@ -5,7 +5,7 @@ import TraderMenu from "../../Dashboards/TraderMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { Eye, XCircle } from "react-bootstrap-icons";
+import { Eye, XCircle, CheckCircle, CashStack } from "react-bootstrap-icons";
 
 const MyOrders = () => {
     const navigate = useNavigate();
@@ -71,14 +71,20 @@ const MyOrders = () => {
 
     const getStatusBadge = (status) => {
         const statusConfig = {
-            Pending: { color: "warning", text: "Pending Approval" },
-            Accepted: { color: "info", text: "Accepted" },
-            Rejected: { color: "danger", text: "Rejected" },
-            "Ready for Pickup": { color: "primary", text: "Ready for Pickup" },
-            "In Transit": { color: "info", text: "In Transit" },
-            Delivered: { color: "success", text: "Delivered" },
+            Pending: { color: "warning", text: "⏳ Pending Approval" },
+            "Farmer Agreed": { color: "info", text: "✍️ Farmer Signed - Your Turn" },
+            "Both Agreed": { color: "primary", text: "🤝 Agreement Complete" },
+            "Awaiting Advance": { color: "warning", text: "💰 Pay 30% Advance" },
+            "Advance Paid": { color: "success", text: "✓ Advance Paid" },
+            Accepted: { color: "info", text: "✓ Accepted" },
+            Rejected: { color: "danger", text: "✗ Rejected" },
+            "Ready for Pickup": { color: "primary", text: "📦 Ready for Pickup" },
+            "Transport Assigned": { color: "info", text: "🚛 Transport Selected" },
+            "In Transit": { color: "info", text: "🚚 In Transit" },
+            Delivered: { color: "success", text: "✓ Delivered" },
+            "Awaiting Final Payment": { color: "warning", text: "💰 Pay Remaining" },
             Cancelled: { color: "secondary", text: "Cancelled" },
-            Completed: { color: "success", text: "Completed" },
+            Completed: { color: "success", text: "✓ Completed" },
         };
 
         const config = statusConfig[status] || { color: "secondary", text: status };
@@ -236,6 +242,29 @@ const MyOrders = () => {
                                                                     View Details
                                                                 </button>
 
+                                                                {/* Farmer Agreed: Confirm Agreement */}
+                                                                {order.orderStatus === "Farmer Agreed" && (
+                                                                    <button
+                                                                        className="btn btn-sm btn-success"
+                                                                        onClick={() => navigate(`/trader/confirm-agreement/${order._id}`)}
+                                                                    >
+                                                                        <CheckCircle size={14} className="me-1" />
+                                                                        Confirm Agreement
+                                                                    </button>
+                                                                )}
+
+                                                                {/* Both Agreed: Pay Advance */}
+                                                                {order.orderStatus === "Both Agreed" && (
+                                                                    <button
+                                                                        className="btn btn-sm btn-warning"
+                                                                        onClick={() => navigate(`/trader/pay-advance/${order._id}`)}
+                                                                    >
+                                                                        <CashStack size={14} className="me-1" />
+                                                                        Pay 30% Advance (₹{Math.round(order.totalPrice * 0.30)})
+                                                                    </button>
+                                                                )}
+
+                                                                {/* Pending: Cancel */}
                                                                 {order.orderStatus === "Pending" && (
                                                                     <button
                                                                         className="btn btn-sm btn-outline-danger"

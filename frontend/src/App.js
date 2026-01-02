@@ -26,12 +26,14 @@ import OrderDetails from "./pages/farmer/OrderDetails";
 import CommunityPage from "./pages/farmer/CommunityPage";
 import FarmCalendarPage from "./pages/farmer/FarmCalendarPage";
 import WeatherPage from "./pages/farmer/WeatherPage";
+import AgreementSign from "./pages/farmer/AgreementSign";
 
 // Trader Pages
 import BrowseCrops from "./pages/trader/BrowseCrops";
 import CropDetails from "./pages/trader/CropDetails";
 import PlaceOrder from "./pages/trader/PlaceOrder";
 import TraderMyOrders from "./pages/trader/MyOrders";
+import ConfirmAgreement from "./pages/trader/ConfirmAgreement";
 
 // Transport Pages
 import AvailableDeliveries from "./pages/transport/AvailableDeliveries";
@@ -133,6 +135,22 @@ const App = () => {
           element={
             <RoleProtectedRoute role="farmer">
               <WeatherPage />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/farmer/agreement/:orderId"
+          element={
+            <RoleProtectedRoute role="farmer">
+              <AgreementSign />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/trader/confirm-agreement/:orderId"
+          element={
+            <RoleProtectedRoute role="trader">
+              <ConfirmAgreement />
             </RoleProtectedRoute>
           }
         />
