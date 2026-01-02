@@ -40,7 +40,7 @@ OPENWEATHER_API_KEY=your_api_key_here
 
 **Example:**
 ```env
-OPENWEATHER_API_KEY=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+OPENWEATHER_API_KEY=
 ```
 
 ### Step 3: Update server.js (Optional - for scheduled updates)
