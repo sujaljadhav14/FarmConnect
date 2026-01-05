@@ -40,10 +40,10 @@ const locationUpdateSchema = new mongoose.Schema(
     }
 );
 
-// Indexes for better query performance
-locationUpdateSchema.index({ orderId: 1, timestamp: -1 });
-locationUpdateSchema.index({ transportRecordId: 1, timestamp: -1 });
-locationUpdateSchema.index({ transportUserId: 1 });
+// // Indexes for better query performance
+// locationUpdateSchema.index({ orderId: 1, timestamp: -1 });
+// locationUpdateSchema.index({ transportRecordId: 1, timestamp: -1 });
+// locationUpdateSchema.index({ transportUserId: 1 });
 
 // TTL index - automatically delete location updates older than 7 days
 locationUpdateSchema.index({ timestamp: 1 }, { expireAfterSeconds: 604800 });

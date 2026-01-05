@@ -53,12 +53,12 @@ const paymentSchema = new mongoose.Schema(
     }
 );
 
-// Indexes for better query performance
-paymentSchema.index({ orderId: 1, type: 1 });
-paymentSchema.index({ paidBy: 1 });
-paymentSchema.index({ paidTo: 1 });
-paymentSchema.index({ status: 1 });
-paymentSchema.index({ razorpayOrderId: 1 });
+// // Indexes for better query performance
+// paymentSchema.index({ orderId: 1, type: 1 });
+// paymentSchema.index({ paidBy: 1 });
+// paymentSchema.index({ paidTo: 1 });
+// paymentSchema.index({ status: 1 });
+// paymentSchema.index({ razorpayOrderId: 1 });
 
 const Payment = mongoose.model("Payment", paymentSchema);
 

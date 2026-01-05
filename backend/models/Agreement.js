@@ -58,8 +58,8 @@ const agreementSchema = new mongoose.Schema(
 );
 
 // Index for better query performance
-agreementSchema.index({ orderId: 1 });
-agreementSchema.index({ status: 1 });
+// agreementSchema.index({ orderId: 1 });
+// agreementSchema.index({ status: 1 });
 
 const Agreement = mongoose.model("Agreement", agreementSchema);
 

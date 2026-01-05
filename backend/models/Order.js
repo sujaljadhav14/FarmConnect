@@ -124,10 +124,10 @@ const orderSchema = new mongoose.Schema(
 // Note: Payment amounts (advanceAmount, finalAmount, totalPayable) are calculated
 // when the order is created or updated in the controller
 
-// Index for better query performance
-orderSchema.index({ farmerId: 1, orderStatus: 1 });
-orderSchema.index({ traderId: 1, orderStatus: 1 });
-orderSchema.index({ transportId: 1, orderStatus: 1 });
+// // Index for better query performance
+// orderSchema.index({ farmerId: 1, orderStatus: 1 });
+// orderSchema.index({ traderId: 1, orderStatus: 1 });
+// orderSchema.index({ transportId: 1, orderStatus: 1 });
 
 const Order = mongoose.model("Order", orderSchema);
 
