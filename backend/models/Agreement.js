@@ -57,7 +57,11 @@ const agreementSchema = new mongoose.Schema(
     }
 );
 
+<<<<<<< HEAD
 // // Index for better query performance
+=======
+// Index for better query performance
+>>>>>>> 51448afd2a7560955bd4a918421312b80deea0c4
 // agreementSchema.index({ orderId: 1 });
 // agreementSchema.index({ status: 1 });
 
