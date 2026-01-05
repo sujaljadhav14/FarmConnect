@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Layout from "../components/layout/Layout";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -39,7 +39,7 @@ const TraderKYC = () => {
 
   useEffect(() => {
     if (auth?.token) fetchMyKYC();
-  }, [auth?.token]);
+  }, [auth?.token, fetchMyKYC]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,25 +110,43 @@ const TraderKYC = () => {
               <h3 className="text-primary mb-3">🏢 Trader KYC Verification</h3>
 
               {kycStatus === "not_submitted" && (
-                <marquee className="text-danger fw-bold mb-3">
+                <div className="alert alert-danger mb-3 fw-bold" role="alert">
                   ⚠️ Complete your KYC to start trading!
-                </marquee>
+                </div>
               )}
 
               {kycStatus && kycStatus !== "not_submitted" && (
                 <div
-                  className={`alert ${kycStatus === "approved"
-                    ? "alert-success"
-                    : kycStatus === "rejected"
+                  className={`alert ${
+                    kycStatus === "approved"
+                      ? "alert-success"
+                      : kycStatus === "rejected"
                       ? "alert-danger"
                       : "alert-warning"
-                    }`}
+                  }`}
                 >
-                  KYC Status: <b>{kycStatus}</b>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div>
+                      KYC Status: <b>{kycStatus}</b>
+                      {kycStatus === "rejected" && (
+                        <p className="mb-0 mt-2 small">
+                          ❌ Your KYC was rejected. Please review and resubmit with correct information.
+                        </p>
+                      )}
+                    </div>
+                    {kycStatus === "rejected" && (
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => setKycStatus("not_submitted")}
+                      >
+                        🔄 Resubmit KYC
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {kycStatus === "not_submitted" && (
+              {kycStatus === "not_submitted" || kycStatus === "rejected" ? (
                 <form onSubmit={handleSubmit}>
                   <FileInput
                     label="Aadhaar / PAN Card"
@@ -167,7 +185,7 @@ const TraderKYC = () => {
                     {loading ? "Submitting..." : "Submit KYC"}
                   </button>
                 </form>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

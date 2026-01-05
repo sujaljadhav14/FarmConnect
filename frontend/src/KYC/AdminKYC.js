@@ -99,8 +99,13 @@ const AdminKYC = () => {
                         {/* ROLE */}
                         <div className="mb-3">
                           <span
-                            className={`badge ${k.role === "farmer" ? "bg-success" : "bg-primary"
-                              }`}
+                            className={`badge ${
+                              k.role === "farmer"
+                                ? "bg-success"
+                                : k.role === "trader"
+                                ? "bg-primary"
+                                : "bg-info"
+                            }`}
                           >
                             {k.role.toUpperCase()}
                           </span>
@@ -121,7 +126,40 @@ const AdminKYC = () => {
                               file={k.businessReg}
                             />
                           )}
+                          {k.drivingLicense && (
+                            <DocBtn label="Driving License" file={k.drivingLicense} />
+                          )}
+                          {k.vehicleRC && (
+                            <DocBtn label="Vehicle RC" file={k.vehicleRC} />
+                          )}
+                          {k.insurance && (
+                            <DocBtn label="Insurance" file={k.insurance} />
+                          )}
+                          {k.pollution && (
+                            <DocBtn label="Pollution Cert." file={k.pollution} />
+                          )}
                         </div>
+
+                        {/* TRANSPORTER DETAILS */}
+                        {k.role === "transport" && (
+                          <div className="alert alert-info py-2 mb-3">
+                            <small className="d-block mb-1">
+                              <strong>License:</strong> {k.licenseNumber || "N/A"}
+                            </small>
+                            <small className="d-block mb-1">
+                              <strong>Expiry:</strong>{" "}
+                              {k.licenseExpiry
+                                ? new Date(k.licenseExpiry).toLocaleDateString("en-IN")
+                                : "N/A"}
+                            </small>
+                            <small className="d-block mb-1">
+                              <strong>Vehicle:</strong> {k.vehicleNumber || "N/A"}
+                            </small>
+                            <small className="d-block">
+                              <strong>Type:</strong> {k.vehicleType || "N/A"}
+                            </small>
+                          </div>
+                        )}
 
                         {/* ACTIONS */}
                         {k.status === "pending" ? (

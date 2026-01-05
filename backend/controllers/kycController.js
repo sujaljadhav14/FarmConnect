@@ -1,23 +1,30 @@
 import KYC from "../models/kycModel.js";
 
-// 1. Submit KYC (Farmer or Trader)
+// 1. Submit KYC (Farmer, Trader, or Transport)
 export const submitKYC = async (req, res) => {
   try {
-    // FIX 1: Read "id" not "_id" from token
     const userId = req.user?.id;
     const role = req.user?.role;
+
+    console.log("=== KYC SUBMISSION ===");
+    console.log("User ID:", userId);
+    console.log("Role:", role);
+    console.log("Files received:", Object.keys(req.files || {}));
+    console.log("Body fields:", Object.keys(req.body || {}));
 
     if (!userId) {
       return res.status(400).json({ error: "User ID missing from token" });
     }
 
-    // FIX 2: Build KYC data only with available files
+    // Build KYC data
     const data = {
       user: userId,
       role,
       aadhaarPan: req.files?.aadhaarPan?.[0]?.filename || null,
       selfie: req.files?.selfie?.[0]?.filename || null,
     };
+
+    console.log("Initial data:", data);
 
     if (role === "farmer") {
       data.landProof = req.files?.landProof?.[0]?.filename || null;
@@ -28,27 +35,69 @@ export const submitKYC = async (req, res) => {
       data.businessReg = req.files?.businessReg?.[0]?.filename || null;
     }
 
-    // FIX 3: Prevent saving all-null file data
+    if (role === "transport") {
+      data.drivingLicense = req.files?.drivingLicense?.[0]?.filename || null;
+      data.vehicleRC = req.files?.vehicleRC?.[0]?.filename || null;
+      data.insurance = req.files?.insurance?.[0]?.filename || null;
+      data.pollution = req.files?.pollution?.[0]?.filename || null;
+      data.licenseNumber = req.body?.licenseNumber || null;
+      data.licenseExpiry = req.body?.licenseExpiry || null;
+      data.vehicleNumber = req.body?.vehicleNumber || null;
+      data.vehicleType = req.body?.vehicleType || null;
+      
+      console.log("Transport data:", data);
+    }
+
+    // Validation
     if (!data.aadhaarPan || !data.selfie) {
+      console.log("❌ Missing basic docs:", { aadhaarPan: data.aadhaarPan, selfie: data.selfie });
       return res.status(400).json({
         error: "Aadhaar/PAN and Selfie are required",
       });
     }
 
+    if (role === "transport") {
+      if (!data.drivingLicense || !data.vehicleRC) {
+        console.log("❌ Missing transport docs:", { drivingLicense: data.drivingLicense, vehicleRC: data.vehicleRC });
+        return res.status(400).json({
+          error: "Driving License and Vehicle RC are required for transporter",
+        });
+      }
+      if (!data.licenseNumber || !data.licenseExpiry || !data.vehicleNumber || !data.vehicleType) {
+        console.log("❌ Missing transport details:", { 
+          licenseNumber: data.licenseNumber,
+          licenseExpiry: data.licenseExpiry,
+          vehicleNumber: data.vehicleNumber,
+          vehicleType: data.vehicleType
+        });
+        return res.status(400).json({
+          error: "License number, expiry, vehicle number, and type are required",
+        });
+      }
+    }
+
+    console.log("✅ Validation passed");
+
     // Check existing KYC
     const existing = await KYC.findOne({ user: userId });
 
     if (existing) {
+      console.log("Updating existing KYC:", existing._id);
+      // Reset status to pending on resubmission
+      data.status = "pending";
       await KYC.findByIdAndUpdate(existing._id, data);
       return res.json({ message: "KYC updated successfully" });
     }
 
-    await KYC.create(data);
-    res.json({ message: "KYC submitted successfully" });
+    console.log("Creating new KYC with data:", data);
+    const newKyc = await KYC.create(data);
+    console.log("✅ KYC Created:", newKyc._id);
+    
+    res.json({ message: "KYC submitted successfully", kycId: newKyc._id });
   } catch (error) {
-    console.log("KYC Error:", error);
+    console.error("❌ KYC Error:", error.message);
+    console.error("Stack:", error.stack);
 
-    // FIX 4: Return which documents failed saving
     res.status(500).json({
       error: "KYC submission failed",
       details: error?.message,

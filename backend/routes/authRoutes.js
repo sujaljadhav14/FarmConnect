@@ -54,6 +54,10 @@ const uploadFields = upload.fields([
   { name: "landProof", maxCount: 1 },
   { name: "gst", maxCount: 1 },
   { name: "businessReg", maxCount: 1 },
+  { name: "drivingLicense", maxCount: 1 },
+  { name: "vehicleRC", maxCount: 1 },
+  { name: "insurance", maxCount: 1 },
+  { name: "pollution", maxCount: 1 },
 ]);
 
 // USER — Submit KYC

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Layout from "../components/layout/Layout";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -44,7 +44,7 @@ const FarmerKYC = () => {
 
   useEffect(() => {
     if (auth?.token) fetchMyKYC();
-  }, [auth?.token]);
+  }, [auth?.token, fetchMyKYC]);
 
   /* ---------- PREVIEWS ---------- */
   useEffect(() => {
@@ -116,30 +116,48 @@ const FarmerKYC = () => {
             <div className="card shadow p-4 rounded-4 col-md-6">
               <h3 className="text-success mb-3">🪪 Farmer KYC Verification</h3>
 
-              {/* ---------- MARQUEE ALERT ---------- */}
+              {/* ---------- ALERT ---------- */}
               {kycStatus === "not_submitted" && (
-                <marquee className="mb-3 text-danger fw-bold">
+                <div className="alert alert-danger mb-3 fw-bold" role="alert">
                   ⚠️ You have not submitted your KYC. Complete your KYC to
                   access all features!
-                </marquee>
+                </div>
               )}
 
               {/* STATUS MESSAGE */}
               {kycStatus && kycStatus !== "not_submitted" && (
                 <div
-                  className={`alert ${kycStatus === "approved"
-                    ? "alert-success"
-                    : kycStatus === "rejected"
+                  className={`alert ${
+                    kycStatus === "approved"
+                      ? "alert-success"
+                      : kycStatus === "rejected"
                       ? "alert-danger"
                       : "alert-warning"
-                    }`}
+                  }`}
                 >
-                  KYC Status: <b className="text-capitalize">{kycStatus}</b>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div>
+                      KYC Status: <b className="text-capitalize">{kycStatus}</b>
+                      {kycStatus === "rejected" && (
+                        <p className="mb-0 mt-2 small">
+                          ❌ Your KYC was rejected. Please review and resubmit with correct information.
+                        </p>
+                      )}
+                    </div>
+                    {kycStatus === "rejected" && (
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => setKycStatus("not_submitted")}
+                      >
+                        🔄 Resubmit KYC
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
 
               {/* FORM */}
-              {kycStatus === null || kycStatus === "not_submitted" ? (
+              {kycStatus === null || kycStatus === "not_submitted" || kycStatus === "rejected" ? (
                 <form onSubmit={handleSubmit}>
                   <FileInput
                     label="Aadhaar / PAN"

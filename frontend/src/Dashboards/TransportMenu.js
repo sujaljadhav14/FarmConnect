@@ -5,6 +5,7 @@ import {
     Truck,
     ClipboardData,
     ClipboardCheck,
+    FileText,
 } from "react-bootstrap-icons";
 
 const TransportMenu = () => {
@@ -30,6 +31,11 @@ const TransportMenu = () => {
             name: "KYC Verification",
             icon: <ClipboardCheck className="me-2" />,
             path: "/transport/kyc",
+        },
+        {
+            name: "My KYC Data",
+            icon: <FileText className="me-2" />,
+            path: "/transport/kyc-data",
         },
     ];
 

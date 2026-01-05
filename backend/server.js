@@ -73,13 +73,21 @@ app.use("/api/vehicles", vehicleManagementRoutes);
 
 const PORT = process.env.PORT || 8080;
 
-server.listen(PORT, () => {
-  console.log(`App running at http://localhost:${PORT}`);
-});
+// Connect to database BEFORE starting server
+dbConnect()
+  .then(() => {
+    console.log("✅ Database connected successfully");
+    
+    server.listen(PORT, () => {
+      console.log(`✅ App running at http://localhost:${PORT}`);
+    });
 
-dbConnect();
-
-// Start weather update scheduler
-scheduleWeatherUpdates(io);
-console.log("Weather scheduler initialized");
+    // Start weather update scheduler
+    scheduleWeatherUpdates(io);
+    console.log("✅ Weather scheduler initialized");
+  })
+  .catch((err) => {
+    console.error("❌ Database connection failed:", err.message);
+    process.exit(1);
+  });
 

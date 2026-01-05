@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
-import { MapPin, Calendar, Box, TrendingUp, Truck, ExclamationCircle } from "react-bootstrap-icons";
+import { GeoAlt, Calendar, Box, GraphUp, Truck, ExclamationCircle } from "react-bootstrap-icons";
 import axios from "axios";
 import "../../styles/AvailableOrders.css";
 
@@ -15,7 +15,6 @@ const AvailableOrders = () => {
   const [loadingVehicles, setLoadingVehicles] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [acceptingOrder, setAcceptingOrder] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     fetchAvailableOrders();
@@ -241,7 +240,7 @@ const AvailableOrders = () => {
                             </div>
 
                             <div className="info-row">
-                              <TrendingUp size={16} className="me-2" />
+                              <GraphUp size={16} className="me-2" />
                               <div>
                                 <small className="text-muted d-block">
                                   Total Price
@@ -253,7 +252,7 @@ const AvailableOrders = () => {
                             </div>
 
                             <div className="info-row">
-                              <MapPin size={16} className="me-2" />
+                              <GeoAlt size={16} className="me-2" />
                               <div>
                                 <small className="text-muted d-block">
                                   Delivery Location

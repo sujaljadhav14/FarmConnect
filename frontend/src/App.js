@@ -17,6 +17,8 @@ import FarmerKYC_Data from "./KYC/FarmerKYC_Data";
 import AdminKYC from "./KYC/AdminKYC";
 import TraderKYC from "./KYC/TraderKYC";
 import TraderKYC_Data from "./KYC/TraderKYC_Data";
+import TransporterKYC from "./KYC/TransporterKYC";
+import TransporterKYC_Data from "./KYC/TransporterKYC_Data";
 
 // Farmer Pages
 import AddCrop from "./pages/farmer/AddCrop";
@@ -266,6 +268,22 @@ const App = () => {
           element={
             <RoleProtectedRoute role="transport">
               <MyDeliveries />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/transport/kyc"
+          element={
+            <RoleProtectedRoute role="transport">
+              <TransporterKYC />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/transport/kyc-data"
+          element={
+            <RoleProtectedRoute role="transport">
+              <TransporterKYC_Data />
             </RoleProtectedRoute>
           }
         />
