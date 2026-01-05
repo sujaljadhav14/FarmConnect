@@ -28,7 +28,7 @@ const AgreementSign = () => {
     const fetchOrderDetails = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/orders/details/${orderId}`,
+                `/api/orders/details/${orderId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -66,7 +66,7 @@ const AgreementSign = () => {
         setSigning(true);
         try {
             const { data } = await axios.post(
-                `${process.env.REACT_APP_API}/api/agreements/farmer-sign/${orderId}`,
+                `/api/agreements/farmer-sign/${orderId}`,
                 {
                     qualityCommitment,
                     qualityGrade: order?.cropId?.quality || "A",

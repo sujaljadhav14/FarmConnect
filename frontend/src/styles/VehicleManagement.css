@@ -1,0 +1,238 @@
+/* Vehicle Management Styles */
+
+.vehicle-management-wrapper {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.vehicle-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.vehicle-card:hover {
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.15);
+    transform: translateY(-3px);
+}
+
+.vehicle-card .card-header {
+    padding: 1rem;
+    font-weight: 600;
+}
+
+.vehicle-card .card-header small {
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.vehicle-details {
+    background: #f9f9f9;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row .label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 600;
+    min-width: 100px;
+}
+
+.detail-row .value {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.detail-row.weight-slab .value {
+    background: #e8f5e9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+}
+
+.vehicle-card .card-footer {
+    padding: 0.75rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.vehicle-card .card-footer .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+}
+
+/* Button Styles */
+.btn-outline-primary:hover,
+.btn-outline-warning:hover,
+.btn-outline-danger:hover {
+    transform: scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .vehicle-card {
+        margin-bottom: 1rem;
+    }
+
+    .detail-row {
+        flex-wrap: wrap;
+    }
+
+    .detail-row .label {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+
+    .detail-row .value {
+        width: 100%;
+    }
+
+    .vehicle-card .card-footer .btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.5rem;
+    }
+}
+
+/* Loading Spinner */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Modal Styles */
+.modal {
+    z-index: 1050;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 8px;
+}
+
+.modal-header {
+    border-radius: 8px 8px 0 0;
+}
+
+/* Form Styles */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.6rem 0.8rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+section {
+    margin-bottom: 2rem;
+}
+
+section h5 {
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.alert-info {
+    background-color: #e7f3ff;
+    border-color: #b3d9ff;
+    color: #004085;
+}
+
+.input-group {
+    margin-bottom: 0;
+}
+
+.input-group .form-select {
+    min-width: 80px;
+}
+
+/* Header Styling */
+.vehicle-management-wrapper > div:first-child {
+    margin-bottom: 2rem;
+}
+
+.vehicle-management-wrapper > div:first-child h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.vehicle-management-wrapper > div:first-child p {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* No Vehicles State */
+.text-center {
+    padding: 3rem 2rem;
+}
+
+.text-center h5 {
+    color: #999;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.text-center p {
+    color: #bbb;
+    margin-bottom: 1.5rem;
+}
+
+/* Certifications Display */
+.certifications-display {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.certification-badge {
+    background: #f0f0f0;
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    color: #555;
+}

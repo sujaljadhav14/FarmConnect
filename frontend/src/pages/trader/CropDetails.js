@@ -28,7 +28,7 @@ const CropDetails = () => {
     const fetchCropDetails = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/crops/details/${id}`,
+                `/api/crops/details/${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,

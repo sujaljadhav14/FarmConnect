@@ -8,8 +8,8 @@ dotenv.config();
 
 const debugLogin = async () => {
     try {
-        // Connect to MongoDB
-        await mongoose.connect(process.env.MONGO_URI);
+        // Connect to MongoDB (support MONGODB_URI or legacy MONGO_URI)
+        await mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI);
         console.log("✅ Connected to MongoDB\n");
 
         // Get all users from database

@@ -8,8 +8,8 @@ dotenv.config();
 
 const seedUsers = async () => {
     try {
-        // Connect to MongoDB
-        await mongoose.connect(process.env.MONGO_URI);
+        // Connect to MongoDB (support MONGODB_URI or legacy MONGO_URI)
+        await mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI);
         console.log("✅ Connected to MongoDB");
 
         // Clear existing users (optional - comment out if you want to keep existing users)

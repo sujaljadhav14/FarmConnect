@@ -5,8 +5,6 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 import Layout from "../components/layout/Layout";
 
-const API = process.env.REACT_APP_API;
-
 const PhoneOtpLogin = () => {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -25,7 +23,7 @@ const PhoneOtpLogin = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${API}/api/auth/send-otp`, {
+      const res = await axios.post("/api/auth/send-otp", {
         phone: phone.trim(),
       });
       setStep("otp");
@@ -48,7 +46,7 @@ const PhoneOtpLogin = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${API}/api/auth/verify-otp`, {
+      const res = await axios.post("/api/auth/verify-otp", {
         phone: phone.trim(),
         code: otp.trim(),
       });

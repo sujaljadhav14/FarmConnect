@@ -12,8 +12,19 @@ export const requireSignIn = (req, res, next) => {
     // Extract token
     const token = authHeader.split(" ")[1];
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Reject common invalid values before verifying
+    if (!token || token === "undefined" || token === "null") {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    // Verify token (catch JWT specific errors separately)
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (verifyErr) {
+      console.error("Auth Verify Error:", verifyErr.name, verifyErr.message);
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
 
     // Attach user info
     req.user = {
@@ -25,7 +36,7 @@ export const requireSignIn = (req, res, next) => {
     next();
   } catch (err) {
     console.error("Auth Error:", err);
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "Authentication failed" });
   }
 };
 

@@ -21,7 +21,7 @@ const MyDeliveries = () => {
     const fetchMyDeliveries = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/transport/my-deliveries`,
+                `/api/transport/my-deliveries`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -47,7 +47,7 @@ const MyDeliveries = () => {
         setStatusLoading(deliveryId);
         try {
             const { data } = await axios.put(
-                `${process.env.REACT_APP_API}/api/transport/status/${deliveryId}`,
+                `/api/transport/status/${deliveryId}`,
                 { status: newStatus },
                 {
                     headers: {

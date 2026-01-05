@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import TraderMenu from "../Dashboards/TraderMenu";
 
-const API = process.env.REACT_APP_API;
-
 const TraderKYC_Data = () => {
   const { auth } = useAuth();
   const [kyc, setKyc] = useState(null);
@@ -15,7 +13,7 @@ const TraderKYC_Data = () => {
 
   const fetchMyKYC = async () => {
     try {
-      const { data } = await axios.get(`${API}/api/auth/my-kyc`, {
+      const { data } = await axios.get("/api/auth/my-kyc", {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -160,7 +158,7 @@ const DocumentItem = ({ label, file }) => (
   <li className="list-group-item d-flex justify-content-between align-items-center">
     <span>{label}</span>
     <a
-      href={`${API}/uploads/${file}`}
+      href={`/uploads/${file}`}
       target="_blank"
       rel="noreferrer"
       className="btn btn-sm btn-outline-primary"

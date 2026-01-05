@@ -66,9 +66,9 @@ const transportSchema = new mongoose.Schema(
     }
 );
 
-// Index for better query performance
-transportSchema.index({ transportId: 1, status: 1 });
-transportSchema.index({ orderId: 1 });
+// // Index for better query performance
+// transportSchema.index({ transportId: 1, status: 1 });
+// transportSchema.index({ orderId: 1 });
 
 const Transport = mongoose.model("Transport", transportSchema);
 

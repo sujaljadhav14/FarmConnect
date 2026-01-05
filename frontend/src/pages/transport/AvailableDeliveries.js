@@ -21,7 +21,7 @@ const AvailableDeliveries = () => {
     const fetchAvailableDeliveries = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/transport/available`,
+                `/api/transport/available`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -56,7 +56,7 @@ const AvailableDeliveries = () => {
         setAcceptLoading(orderId);
         try {
             const { data } = await axios.post(
-                `${process.env.REACT_APP_API}/api/transport/accept/${orderId}`,
+                `/api/transport/accept/${orderId}`,
                 {
                     vehicleType,
                     vehicleNumber,

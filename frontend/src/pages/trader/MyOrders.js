@@ -21,7 +21,7 @@ const MyOrders = () => {
     const fetchMyOrders = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/orders/trader/my-orders`,
+                `/api/orders/trader/my-orders`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -45,7 +45,7 @@ const MyOrders = () => {
             setCancelLoading(orderId);
             try {
                 const { data } = await axios.put(
-                    `${process.env.REACT_APP_API}/api/orders/cancel/${orderId}`,
+                    `/api/orders/cancel/${orderId}`,
                     { cancellationReason: "Cancelled by trader" },
                     {
                         headers: {

@@ -14,8 +14,6 @@ import {
     PersonCircle,
 } from "react-bootstrap-icons";
 
-const API = process.env.REACT_APP_API;
-
 const CommunityPage = () => {
     const { auth } = useAuth();
     const [posts, setPosts] = useState([]);
@@ -27,7 +25,7 @@ const CommunityPage = () => {
     // Load posts
     const getPosts = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/community/posts`, {
+            const { data } = await axios.get("/api/community/posts", {
                 headers: { Authorization: `Bearer ${auth?.token}` },
             });
             if (data?.success) {
@@ -43,7 +41,7 @@ const CommunityPage = () => {
         getPosts();
 
         // Socket implementation
-        socket.current = io(API);
+        socket.current = io(process.env.REACT_APP_API);
 
         socket.current.on("newPost", (newPost) => {
             setPosts((prev) => [newPost, ...prev]);
@@ -68,7 +66,7 @@ const CommunityPage = () => {
         try {
             setLoading(true);
             const { data } = await axios.post(
-                `${API}/api/community/posts`,
+                "/api/community/posts",
                 { content },
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );
@@ -87,7 +85,7 @@ const CommunityPage = () => {
     const handleLike = async (postId) => {
         try {
             await axios.put(
-                `${API}/api/community/posts/${postId}/like`,
+                `/api/community/posts/${postId}/like`,
                 {},
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );
@@ -103,7 +101,7 @@ const CommunityPage = () => {
 
         try {
             const { data } = await axios.post(
-                `${API}/api/community/posts/${postId}/comment`,
+                `/api/community/posts/${postId}/comment`,
                 { text },
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );

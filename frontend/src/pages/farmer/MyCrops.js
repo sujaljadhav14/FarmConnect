@@ -21,7 +21,7 @@ const MyCrops = () => {
     const fetchMyCrops = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/crops/my-crops`,
+                `/api/crops/my-crops`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -45,7 +45,7 @@ const MyCrops = () => {
             setDeleteLoading(cropId);
             try {
                 const { data } = await axios.delete(
-                    `${process.env.REACT_APP_API}/api/crops/delete/${cropId}`,
+                    `/api/crops/delete/${cropId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("token")}`,

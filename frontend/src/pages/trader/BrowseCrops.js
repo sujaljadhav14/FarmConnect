@@ -32,7 +32,7 @@ const BrowseCrops = () => {
     const fetchAvailableCrops = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/crops/available`,
+                `/api/crops/available`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,

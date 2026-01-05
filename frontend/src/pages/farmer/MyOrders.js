@@ -23,7 +23,7 @@ const FarmerMyOrders = () => {
     const fetchMyOrders = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/orders/farmer/my-orders`,
+                `/api/orders/farmer/my-orders`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -47,7 +47,7 @@ const FarmerMyOrders = () => {
             setActionLoading(orderId);
             try {
                 const { data } = await axios.put(
-                    `${process.env.REACT_APP_API}/api/orders/accept/${orderId}`,
+                    `/api/orders/accept/${orderId}`,
                     {},
                     {
                         headers: {
@@ -82,7 +82,7 @@ const FarmerMyOrders = () => {
             setActionLoading(orderId);
             try {
                 const { data } = await axios.put(
-                    `${process.env.REACT_APP_API}/api/orders/reject/${orderId}`,
+                    `/api/orders/reject/${orderId}`,
                     { rejectionReason: reason },
                     {
                         headers: {
@@ -111,7 +111,7 @@ const FarmerMyOrders = () => {
             setActionLoading(orderId);
             try {
                 const { data } = await axios.put(
-                    `${process.env.REACT_APP_API}/api/orders/ready/${orderId}`,
+                    `/api/orders/ready/${orderId}`,
                     {},
                     {
                         headers: {

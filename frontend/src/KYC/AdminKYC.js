@@ -12,8 +12,6 @@ import {
 import Layout from "../components/layout/Layout";
 import AdminMenu from "../Dashboards/AdminMenu";
 
-const API = process.env.REACT_APP_API;
-
 const AdminKYC = () => {
   const { auth } = useAuth();
   const [kycs, setKycs] = useState([]);
@@ -23,7 +21,7 @@ const AdminKYC = () => {
   const fetchAllKYC = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${API}/api/auth/get-all-kyc`, {
+      const { data } = await axios.get("/api/auth/get-all-kyc", {
         headers: { Authorization: `Bearer ${auth?.token}` },
       });
       setKycs(data);
@@ -37,7 +35,7 @@ const AdminKYC = () => {
   const updateStatus = async (id, status) => {
     try {
       const { data } = await axios.put(
-        `${API}/api/auth/kyc-status/${id}`,
+        `/api/auth/kyc-status/${id}`,
         { status, adminRemark: remarks[id] || "" },
         { headers: { Authorization: `Bearer ${auth?.token}` } }
       );
@@ -178,7 +176,7 @@ const AdminKYC = () => {
 /* ---------- DOCUMENT BUTTON ---------- */
 const DocBtn = ({ label, file }) => (
   <a
-    href={`${API}/uploads/${file}`}
+    href={`/uploads/${file}`}
     target="_blank"
     rel="noreferrer"
     className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"

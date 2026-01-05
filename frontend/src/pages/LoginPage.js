@@ -5,8 +5,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import Layout from "../components/layout/Layout";
 
-const API = process.env.REACT_APP_API;
-
 const LoginPage = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +24,7 @@ const LoginPage = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(`${API}/api/auth/login`, {
+      const res = await axios.post("/api/auth/login", {
         phone: phone.trim(),
         password: password.trim(),
       });

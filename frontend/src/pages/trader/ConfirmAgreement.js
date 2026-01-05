@@ -27,7 +27,7 @@ const ConfirmAgreement = () => {
         try {
             // Fetch order details
             const orderRes = await axios.get(
-                `${process.env.REACT_APP_API}/api/orders/details/${orderId}`,
+                `/api/orders/details/${orderId}`,
                 {
                     headers: { Authorization: `Bearer ${auth?.token}` },
                 }
@@ -44,7 +44,7 @@ const ConfirmAgreement = () => {
             // Fetch agreement details
             try {
                 const agreementRes = await axios.get(
-                    `${process.env.REACT_APP_API}/api/agreements/${orderId}`,
+                    `/api/agreements/${orderId}`,
                     {
                         headers: { Authorization: `Bearer ${auth?.token}` },
                     }
@@ -83,7 +83,7 @@ const ConfirmAgreement = () => {
         setConfirming(true);
         try {
             const { data } = await axios.post(
-                `${process.env.REACT_APP_API}/api/agreements/trader-sign/${orderId}`,
+                `/api/agreements/trader-sign/${orderId}`,
                 { digitalSignature },
                 {
                     headers: { Authorization: `Bearer ${auth?.token}` },
@@ -124,7 +124,7 @@ const ConfirmAgreement = () => {
 
         try {
             const { data } = await axios.post(
-                `${process.env.REACT_APP_API}/api/agreements/cancel/${orderId}`,
+                `/api/agreements/cancel/${orderId}`,
                 { cancellationReason: reason },
                 {
                     headers: { Authorization: `Bearer ${auth?.token}` },

@@ -32,13 +32,10 @@ const AddCrop = () => {
 
     const fetchCropData = async () => {
         try {
+            const headers = auth?.token ? { Authorization: `Bearer ${auth.token}` } : {};
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/crops/details/${id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${auth?.token}`,
-                    },
-                }
+                `/api/crops/details/${id}`,
+                { headers }
             );
 
             if (data.success) {
@@ -74,16 +71,13 @@ const AddCrop = () => {
 
         try {
             const url = id
-                ? `${process.env.REACT_APP_API}/api/crops/update/${id}`
-                : `${process.env.REACT_APP_API}/api/crops/add`;
+                ? `/api/crops/update/${id}`
+                : `/api/crops/add`;
 
             const method = id ? "put" : "post";
 
-            const { data } = await axios[method](url, formData, {
-                headers: {
-                    Authorization: `Bearer ${auth?.token}`,
-                },
-            });
+            const headers = auth?.token ? { Authorization: `Bearer ${auth.token}` } : {};
+            const { data } = await axios[method](url, formData, { headers });
 
             if (data.success) {
                 toast.success(id ? "Crop updated successfully!" : "Crop added successfully!");

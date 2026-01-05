@@ -15,8 +15,6 @@ import {
     ClockHistory,
 } from "react-bootstrap-icons";
 
-const API = process.env.REACT_APP_API;
-
 const FarmCalendarPage = () => {
     const { auth } = useAuth();
     const [date, setDate] = useState(new Date());
@@ -32,7 +30,7 @@ const FarmCalendarPage = () => {
     // Fetch all tasks
     const getAllTasks = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/tasks/my-tasks`, {
+            const { data } = await axios.get("/api/tasks/my-tasks", {
                 headers: { Authorization: `Bearer ${auth?.token}` },
             });
             if (data?.success) {
@@ -54,7 +52,7 @@ const FarmCalendarPage = () => {
         try {
             setLoading(true);
             const { data } = await axios.post(
-                `${API}/api/tasks/create`,
+                "/api/tasks/create",
                 { title, description, date, category },
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );
@@ -77,7 +75,7 @@ const FarmCalendarPage = () => {
     const handleUpdateStatus = async (id, status) => {
         try {
             const { data } = await axios.put(
-                `${API}/api/tasks/update/${id}`,
+                `/api/tasks/update/${id}`,
                 { status },
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );
@@ -93,7 +91,7 @@ const FarmCalendarPage = () => {
     const handleDeleteTask = async (id) => {
         if (!window.confirm("Are you sure you want to delete this task?")) return;
         try {
-            const { data } = await axios.delete(`${API}/api/tasks/delete/${id}`, {
+            const { data } = await axios.delete("/api/tasks/delete/" + id, {
                 headers: { Authorization: `Bearer ${auth?.token}` },
             });
             if (data?.success) {

@@ -26,7 +26,7 @@ const AdminOverview = () => {
     const fetchStats = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/admin/stats`,
+                `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/admin/stats`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -48,7 +48,7 @@ const AdminOverview = () => {
     const fetchActivities = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/admin/activities?limit=10`,
+                `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/admin/activities?limit=10`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,

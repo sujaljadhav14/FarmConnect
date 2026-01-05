@@ -21,7 +21,7 @@ const OrderDetails = () => {
     const fetchOrderDetails = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/orders/details/${id}`,
+                `/api/orders/details/${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,

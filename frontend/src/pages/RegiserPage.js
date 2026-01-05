@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Layout from "../components/layout/Layout";
 
-const API = process.env.REACT_APP_API;
-
 const RegisterPage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -32,7 +30,7 @@ const RegisterPage = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API}/api/auth/register`, {
+      await axios.post("/api/auth/register", {
         name,
         phone,
         password,

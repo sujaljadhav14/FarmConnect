@@ -38,6 +38,9 @@ import ConfirmAgreement from "./pages/trader/ConfirmAgreement";
 // Transport Pages
 import AvailableDeliveries from "./pages/transport/AvailableDeliveries";
 import MyDeliveries from "./pages/transport/MyDeliveries";
+import VehicleManagement from "./pages/transport/VehicleManagement";
+import AddVehicle from "./pages/transport/AddVehicle";
+import AvailableOrders from "./pages/transport/AvailableOrders";
 
 const App = () => {
   return (
@@ -215,6 +218,46 @@ const App = () => {
           element={
             <RoleProtectedRoute role="transport">
               <AvailableDeliveries />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/transport/deliveries"
+          element={
+            <RoleProtectedRoute role="transport">
+              <MyDeliveries />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/transport/vehicles"
+          element={
+            <RoleProtectedRoute role="transport">
+              <VehicleManagement />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/transport/vehicles/add"
+          element={
+            <RoleProtectedRoute role="transport">
+              <AddVehicle />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/transport/vehicles/edit/:vehicleId"
+          element={
+            <RoleProtectedRoute role="transport">
+              <AddVehicle />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/transport/available-orders"
+          element={
+            <RoleProtectedRoute role="transport">
+              <AvailableOrders />
             </RoleProtectedRoute>
           }
         />

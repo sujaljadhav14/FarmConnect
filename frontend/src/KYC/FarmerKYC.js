@@ -5,8 +5,6 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 import FarmerMenu from "../Dashboards/FamerMenu";
 
-const API = process.env.REACT_APP_API;
-
 const FarmerKYC = () => {
   const { auth } = useAuth();
 
@@ -30,7 +28,7 @@ const FarmerKYC = () => {
   /* ---------- FETCH MY KYC ---------- */
   const fetchMyKYC = async () => {
     try {
-      const { data } = await axios.get(`${API}/api/auth/my-kyc`, {
+      const { data } = await axios.get("/api/auth/my-kyc", {
         headers: { Authorization: `Bearer ${auth?.token}` },
       });
 
@@ -86,7 +84,7 @@ const FarmerKYC = () => {
     try {
       setLoading(true);
 
-      await axios.post(`${API}/api/auth/submit-kyc`, formData, {
+      await axios.post("/api/auth/submit-kyc", formData, {
         headers: { Authorization: `Bearer ${auth.token}` },
       });
 
@@ -130,10 +128,10 @@ const FarmerKYC = () => {
               {kycStatus && kycStatus !== "not_submitted" && (
                 <div
                   className={`alert ${kycStatus === "approved"
-                      ? "alert-success"
-                      : kycStatus === "rejected"
-                        ? "alert-danger"
-                        : "alert-warning"
+                    ? "alert-success"
+                    : kycStatus === "rejected"
+                      ? "alert-danger"
+                      : "alert-warning"
                     }`}
                 >
                   KYC Status: <b className="text-capitalize">{kycStatus}</b>

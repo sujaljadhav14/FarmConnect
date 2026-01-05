@@ -15,6 +15,14 @@ import {
 const TransportDashboard = () => {
     const features = [
         {
+            title: "Available Orders",
+            icon: <TruckFront size={40} className="mb-2" />,
+            description:
+                "View available orders from completed trader agreements ready for transport.",
+            link: "/transport/available-orders",
+            color: "info",
+        },
+        {
             title: "Active Deliveries",
             icon: <TruckFront size={40} className="mb-2" />,
             description:

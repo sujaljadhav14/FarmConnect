@@ -20,8 +20,6 @@ import {
     ExclamationTriangle,
 } from "react-bootstrap-icons";
 
-const API = process.env.REACT_APP_API;
-
 const WeatherPage = () => {
     const { auth } = useAuth();
     const navigate = useNavigate();
@@ -40,7 +38,7 @@ const WeatherPage = () => {
     const fetchWeatherLocations = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get(`${API}/api/weather/my-locations`, {
+            const { data } = await axios.get("/api/weather/my-locations", {
                 headers: { Authorization: `Bearer ${auth?.token}` },
             });
 
@@ -60,7 +58,7 @@ const WeatherPage = () => {
 
     const fetchAlerts = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/weather/alerts/all`, {
+            const { data } = await axios.get("/api/weather/alerts/all", {
                 headers: { Authorization: `Bearer ${auth?.token}` },
             });
 
@@ -82,7 +80,7 @@ const WeatherPage = () => {
         try {
             setLoading(true);
             const { data } = await axios.post(
-                `${API}/api/weather/get-weather`,
+                "/api/weather/get-weather",
                 { location: searchQuery },
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );
@@ -106,7 +104,7 @@ const WeatherPage = () => {
 
         try {
             const { data } = await axios.delete(
-                `${API}/api/weather/location/${weatherId}`,
+                `/api/weather/location/${weatherId}`,
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );
 
@@ -122,7 +120,7 @@ const WeatherPage = () => {
     const handleToggleFavorite = async (weatherId) => {
         try {
             const { data } = await axios.put(
-                `${API}/api/weather/favorite/${weatherId}`,
+                `/api/weather/favorite/${weatherId}`,
                 {},
                 { headers: { Authorization: `Bearer ${auth?.token}` } }
             );
@@ -202,13 +200,12 @@ const WeatherPage = () => {
                                 {alerts.slice(0, 3).map((alert, idx) => (
                                     <div
                                         key={idx}
-                                        className={`alert alert-${
-                                            alert.severity === "severe"
+                                        className={`alert alert-${alert.severity === "severe"
                                                 ? "danger"
                                                 : alert.severity === "high"
-                                                ? "warning"
-                                                : "info"
-                                        } d-flex justify-content-between align-items-center`}
+                                                    ? "warning"
+                                                    : "info"
+                                            } d-flex justify-content-between align-items-center`}
                                         role="alert"
                                     >
                                         <div>
@@ -272,9 +269,8 @@ const WeatherPage = () => {
                                         {weatherLocations.map((weather) => (
                                             <button
                                                 key={weather._id}
-                                                className={`list-group-item list-group-item-action ${
-                                                    activeLocation === weather._id ? "active" : ""
-                                                }`}
+                                                className={`list-group-item list-group-item-action ${activeLocation === weather._id ? "active" : ""
+                                                    }`}
                                                 onClick={() => setActiveLocation(weather._id)}
                                             >
                                                 <div className="d-flex justify-content-between align-items-center">

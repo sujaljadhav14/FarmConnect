@@ -29,7 +29,7 @@ const PlaceOrder = () => {
     const fetchCropDetails = async () => {
         try {
             const { data } = await axios.get(
-                `${process.env.REACT_APP_API}/api/crops/details/${cropId}`,
+                `/api/crops/details/${cropId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -89,7 +89,7 @@ const PlaceOrder = () => {
             }
 
             const { data } = await axios.post(
-                `${process.env.REACT_APP_API}/api/orders/create`,
+                `/api/orders/create`,
                 {
                     cropId,
                     quantity: Number(orderData.quantity),
