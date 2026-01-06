@@ -13,24 +13,21 @@ const TransporterKYC = () => {
   // Files
   const [aadhaarPan, setAadhaarPan] = useState(null);
   const [selfie, setSelfie] = useState(null);
-  const [drivingLicense, setDrivingLicense] = useState(null);
-  const [vehicleRC, setVehicleRC] = useState(null);
-  const [insurance, setInsurance] = useState(null);
-  const [pollution, setPollution] = useState(null);
+  const [businessLicense, setBusinessLicense] = useState(null);
+  const [rtoPermit, setRtoPermit] = useState(null);
+  const [commercialPermit, setCommercialPermit] = useState(null);
 
   // Preview
   const [aadhaarPreview, setAadhaarPreview] = useState(null);
   const [selfiePreview, setSelfiePreview] = useState(null);
-  const [licensePreview, setLicensePreview] = useState(null);
-  const [rcPreview, setRCPreview] = useState(null);
-  const [insurancePreview, setInsurancePreview] = useState(null);
-  const [pollutionPreview, setPollutionPreview] = useState(null);
+  const [businessPreview, setBusinessPreview] = useState(null);
+  const [rtoPreview, setRtoPreview] = useState(null);
+  const [commercialPreview, setCommercialPreview] = useState(null);
 
   // Additional fields
-  const [licenseNumber, setLicenseNumber] = useState("");
-  const [licenseExpiry, setLicenseExpiry] = useState("");
-  const [vehicleNumber, setVehicleNumber] = useState("");
-  const [vehicleType, setVehicleType] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [gstNumber, setGstNumber] = useState("");
+  const [transporterId, setTransporterId] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [kycStatus, setKycStatus] = useState(null);
@@ -41,12 +38,11 @@ const TransporterKYC = () => {
 
   const aadhaarRef = useRef();
   const selfieRef = useRef();
+  const businessRef = useRef();
+  const rtoRef = useRef();
+  const commercialRef = useRef();
   const videoRef = useRef();
   const canvasRef = useRef();
-  const licenseRef = useRef();
-  const rcRef = useRef();
-  const insuranceRef = useRef();
-  const pollutionRef = useRef();
 
   /* ---------- FETCH MY KYC ---------- */
   const fetchMyKYC = useCallback(async () => {
@@ -57,12 +53,10 @@ const TransporterKYC = () => {
 
       if (data.status !== "not_submitted") {
         setKycStatus(data.status);
-        // Pre-fill additional fields if KYC exists
         if (data.kyc) {
-          setLicenseNumber(data.kyc.licenseNumber || "");
-          setLicenseExpiry(data.kyc.licenseExpiry || "");
-          setVehicleNumber(data.kyc.vehicleNumber || "");
-          setVehicleType(data.kyc.vehicleType || "");
+          setCompanyName(data.kyc.companyName || "");
+          setGstNumber(data.kyc.gstNumber || "");
+          setTransporterId(data.kyc.transporterId || "");
         }
       } else {
         setKycStatus("not_submitted");
@@ -80,7 +74,7 @@ const TransporterKYC = () => {
   useEffect(() => {
     return () => {
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [stream]);
@@ -101,32 +95,25 @@ const TransporterKYC = () => {
   }, [selfie]);
 
   useEffect(() => {
-    if (!drivingLicense) return setLicensePreview(null);
-    const url = URL.createObjectURL(drivingLicense);
-    setLicensePreview(url);
+    if (!businessLicense) return setBusinessPreview(null);
+    const url = URL.createObjectURL(businessLicense);
+    setBusinessPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [drivingLicense]);
+  }, [businessLicense]);
 
   useEffect(() => {
-    if (!vehicleRC) return setRCPreview(null);
-    const url = URL.createObjectURL(vehicleRC);
-    setRCPreview(url);
+    if (!rtoPermit) return setRtoPreview(null);
+    const url = URL.createObjectURL(rtoPermit);
+    setRtoPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [vehicleRC]);
+  }, [rtoPermit]);
 
   useEffect(() => {
-    if (!insurance) return setInsurancePreview(null);
-    const url = URL.createObjectURL(insurance);
-    setInsurancePreview(url);
+    if (!commercialPermit) return setCommercialPreview(null);
+    const url = URL.createObjectURL(commercialPermit);
+    setCommercialPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [insurance]);
-
-  useEffect(() => {
-    if (!pollution) return setPollutionPreview(null);
-    const url = URL.createObjectURL(pollution);
-    setPollutionPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [pollution]);
+  }, [commercialPermit]);
 
   /* ---------- CAMERA FUNCTIONS ---------- */
   const openCamera = async () => {
@@ -160,85 +147,80 @@ const TransporterKYC = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
-    // Set canvas dimensions to match video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Draw current video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert canvas to blob/file
-    canvas.toBlob((blob) => {
-      const file = new File([blob], `selfie_${Date.now()}.jpg`, {
-        type: "image/jpeg",
-      });
-      setSelfie(file);
+    canvas.toBlob(
+      (blob) => {
+        const file = new File([blob], `selfie_${Date.now()}.jpg`, {
+          type: "image/jpeg",
+        });
+        setSelfie(file);
 
-      // Create preview
-      const url = URL.createObjectURL(file);
-      setSelfiePreview(url);
+        const url = URL.createObjectURL(file);
+        setSelfiePreview(url);
 
-      toast.success("✅ Selfie captured successfully!");
-      closeCamera();
-    }, "image/jpeg", 0.95);
+        toast.success("✅ Selfie captured successfully!");
+        closeCamera();
+      },
+      "image/jpeg",
+      0.95
+    );
   };
 
   /* ---------- SUBMIT ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Detailed validation with specific messages
     if (!aadhaarPan) {
       return toast.error("❌ Aadhaar/PAN Card is required");
     }
-    
+
     if (!selfie) {
       return toast.error("❌ Selfie photo is required");
     }
 
-    if (!drivingLicense) {
-      return toast.error("❌ Driving License is required");
+    if (!businessLicense) {
+      return toast.error("❌ Business License is required");
     }
 
-    if (!vehicleRC) {
-      return toast.error("❌ Vehicle RC (Registration Certificate) is required");
+    if (!companyName || !companyName.trim()) {
+      return toast.error("❌ Transport company name is required");
     }
 
-    if (!licenseNumber || !licenseNumber.trim()) {
-      return toast.error("❌ License Number is required");
+    if (!gstNumber || !gstNumber.trim()) {
+      return toast.error("❌ GST number is required");
     }
 
-    if (!licenseExpiry) {
-      return toast.error("❌ License Expiry Date is required");
+    if (!transporterId || !transporterId.trim()) {
+      return toast.error("❌ Transporter ID / Registration No is required");
     }
 
-    if (!vehicleNumber || !vehicleNumber.trim()) {
-      return toast.error("❌ Vehicle Number is required");
+    if (!rtoPermit) {
+      return toast.error("❌ RTO-issued permit is required");
     }
 
-    if (!vehicleType) {
-      return toast.error("❌ Vehicle Type is required");
+    if (!commercialPermit) {
+      return toast.error("❌ Commercial vehicle permit is required");
     }
 
     const formData = new FormData();
     formData.append("aadhaarPan", aadhaarPan);
     formData.append("selfie", selfie);
-    formData.append("drivingLicense", drivingLicense);
-    formData.append("vehicleRC", vehicleRC);
-    if (insurance) formData.append("insurance", insurance);
-    if (pollution) formData.append("pollution", pollution);
-
-    // Additional text fields
-    formData.append("licenseNumber", licenseNumber);
-    formData.append("licenseExpiry", licenseExpiry);
-    formData.append("vehicleNumber", vehicleNumber);
-    formData.append("vehicleType", vehicleType);
+    formData.append("businessLicense", businessLicense);
+    formData.append("companyName", companyName);
+    formData.append("gstNumber", gstNumber);
+    formData.append("transporterId", transporterId);
+    formData.append("rtoPermit", rtoPermit);
+    formData.append("commercialPermit", commercialPermit);
 
     try {
       setLoading(true);
 
       await axios.post("/api/auth/submit-kyc", formData, {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${auth.token}`,
         },
       });
@@ -247,31 +229,31 @@ const TransporterKYC = () => {
       setKycStatus("pending");
 
       // Reset file inputs
-      aadhaarRef.current.value = "";
-      selfieRef.current.value = "";
-      licenseRef.current.value = "";
-      rcRef.current.value = "";
-      if (insuranceRef.current) insuranceRef.current.value = "";
-      if (pollutionRef.current) pollutionRef.current.value = "";
+      if (aadhaarRef.current) aadhaarRef.current.value = "";
+      if (selfieRef.current) selfieRef.current.value = "";
+      if (businessRef.current) businessRef.current.value = "";
+      if (rtoRef.current) rtoRef.current.value = "";
+      if (commercialRef.current) commercialRef.current.value = "";
 
       // Reset state
       setAadhaarPan(null);
       setSelfie(null);
-      setDrivingLicense(null);
-      setVehicleRC(null);
-      setInsurance(null);
-      setPollution(null);
+      setBusinessLicense(null);
+      setCompanyName("");
+      setGstNumber("");
+      setTransporterId("");
+      setRtoPermit(null);
+      setCommercialPermit(null);
 
-      // Show success message with link to view data
       setTimeout(() => {
         toast.success("View your submitted KYC in 'My KYC Data' menu", {
           duration: 5000,
         });
       }, 1000);
-
     } catch (error) {
       console.error("KYC Error:", error.response?.data || error.message);
-      const errorMsg = error.response?.data?.error || "KYC submission failed. Please try again.";
+      const errorMsg =
+        error.response?.data?.error || "KYC submission failed. Please try again.";
       toast.error(errorMsg);
     } finally {
       setLoading(false);
@@ -298,13 +280,14 @@ const TransporterKYC = () => {
                 <div className="alert alert-light border mb-3">
                   <strong>📋 Form Progress:</strong>
                   <div className="small mt-2">
-                    {aadhaarPan ? "✅ Aadhaar/PAN" : "❌ Aadhaar/PAN"} | {" "}
-                    {selfie ? "✅ Selfie" : "❌ Selfie"} | {" "}
-                    {drivingLicense ? "✅ License" : "❌ License"} | {" "}
-                    {vehicleRC ? "✅ Vehicle RC" : "❌ Vehicle RC"} | {" "}
-                    {licenseNumber && licenseExpiry && vehicleNumber && vehicleType
-                      ? "✅ Details"
-                      : "❌ Details"}
+                    {aadhaarPan ? "✅ Aadhaar/PAN" : "❌ Aadhaar/PAN"} |{" "}
+                    {selfie ? "✅ Selfie" : "❌ Selfie"} |{" "}
+                    {businessLicense ? "✅ Business License" : "❌ Business License"} |{" "}
+                    {companyName ? "✅ Company Name" : "❌ Company Name"} |{" "}
+                    {gstNumber ? "✅ GST" : "❌ GST"} |{" "}
+                    {transporterId ? "✅ Transporter ID" : "❌ Transporter ID"} |{" "}
+                    {rtoPermit ? "✅ RTO Permit" : "❌ RTO Permit"} |{" "}
+                    {commercialPermit ? "✅ Commercial Permit" : "❌ Commercial Permit"}
                   </div>
                 </div>
               ) : null}
@@ -373,8 +356,8 @@ const TransporterKYC = () => {
                 <form onSubmit={handleSubmit}>
                   <div className="row">
                     <div className="col-md-6">
-                      <h5 className="text-muted mb-3">Personal Documents</h5>
-                      
+                      <h5 className="text-muted mb-3">Identity</h5>
+
                       <FileInput
                         label="Aadhaar / PAN Card *"
                         refEl={aadhaarRef}
@@ -388,7 +371,7 @@ const TransporterKYC = () => {
                         <label className="form-label fw-bold">
                           Live Selfie (Photo) *
                         </label>
-                        
+
                         {!selfie && !isCameraOpen && (
                           <button
                             type="button"
@@ -449,98 +432,69 @@ const TransporterKYC = () => {
                           </div>
                         )}
                       </div>
-
-                      <h5 className="text-muted mb-3 mt-4">License Details</h5>
-
-                      <FileInput
-                        label="Driving License *"
-                        refEl={licenseRef}
-                        onChange={setDrivingLicense}
-                        preview={licensePreview}
-                        file={drivingLicense}
-                      />
-
-                      <div className="mb-3">
-                        <label className="form-label fw-bold">License Number *</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter license number"
-                          value={licenseNumber}
-                          onChange={(e) => setLicenseNumber(e.target.value)}
-                          required
-                        />
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label fw-bold">License Expiry Date *</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          value={licenseExpiry}
-                          onChange={(e) => setLicenseExpiry(e.target.value)}
-                          required
-                        />
-                      </div>
                     </div>
 
                     <div className="col-md-6">
-                      <h5 className="text-muted mb-3">Vehicle Documents</h5>
+                      <h5 className="text-muted mb-3">Business Verification</h5>
 
                       <FileInput
-                        label="Vehicle RC (Registration Certificate) *"
-                        refEl={rcRef}
-                        onChange={setVehicleRC}
-                        preview={rcPreview}
-                        file={vehicleRC}
+                        label="Business License *"
+                        refEl={businessRef}
+                        onChange={setBusinessLicense}
+                        preview={businessPreview}
+                        file={businessLicense}
                       />
 
                       <div className="mb-3">
-                        <label className="form-label fw-bold">Vehicle Number *</label>
+                        <label className="form-label fw-bold">Transport Company Name *</label>
                         <input
                           type="text"
                           className="form-control"
-                          placeholder="e.g., MH12AB1234"
-                          value={vehicleNumber}
-                          onChange={(e) => setVehicleNumber(e.target.value.toUpperCase())}
+                          placeholder="Registered company or operator name"
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
                           required
                         />
                       </div>
 
                       <div className="mb-3">
-                        <label className="form-label fw-bold">Vehicle Type *</label>
-                        <select
-                          className="form-select"
-                          value={vehicleType}
-                          onChange={(e) => setVehicleType(e.target.value)}
+                        <label className="form-label fw-bold">GST Number *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="15-digit GSTIN"
+                          value={gstNumber}
+                          onChange={(e) => setGstNumber(e.target.value.toUpperCase())}
                           required
-                        >
-                          <option value="">Select vehicle type</option>
-                          <option value="2-Wheeler">2-Wheeler</option>
-                          <option value="3-Wheeler">3-Wheeler (Auto)</option>
-                          <option value="Pickup">Pickup Truck</option>
-                          <option value="Mini-Truck">Mini Truck</option>
-                          <option value="Truck">Truck</option>
-                          <option value="Trailer">Trailer/Large Truck</option>
-                          <option value="Tempo">Tempo</option>
-                          <option value="Van">Van</option>
-                        </select>
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Transporter ID / Registration No *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Official transporter ID"
+                          value={transporterId}
+                          onChange={(e) => setTransporterId(e.target.value)}
+                          required
+                        />
                       </div>
 
                       <FileInput
-                        label="Vehicle Insurance (Optional)"
-                        refEl={insuranceRef}
-                        onChange={setInsurance}
-                        preview={insurancePreview}
-                        file={insurance}
+                        label="RTO-issued Permit *"
+                        refEl={rtoRef}
+                        onChange={setRtoPermit}
+                        preview={rtoPreview}
+                        file={rtoPermit}
                       />
 
                       <FileInput
-                        label="Pollution Certificate (Optional)"
-                        refEl={pollutionRef}
-                        onChange={setPollution}
-                        preview={pollutionPreview}
-                        file={pollution}
+                        label="Commercial Vehicle Permit *"
+                        refEl={commercialRef}
+                        onChange={setCommercialPermit}
+                        preview={commercialPreview}
+                        file={commercialPermit}
                       />
                     </div>
                   </div>

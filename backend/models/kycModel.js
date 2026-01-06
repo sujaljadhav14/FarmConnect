@@ -16,15 +16,13 @@ const kycSchema = new mongoose.Schema(
     gst: { type: String },
     businessReg: { type: String },
 
-    // Transporter-only
-    drivingLicense: { type: String },
-    vehicleRC: { type: String },
-    insurance: { type: String },
-    pollution: { type: String },
-    licenseNumber: { type: String },
-    licenseExpiry: { type: Date },
-    vehicleNumber: { type: String },
-    vehicleType: { type: String },
+    // Transporter-only (business verification only)
+    businessLicense: { type: String },
+    companyName: { type: String },
+    gstNumber: { type: String },
+    transporterId: { type: String },
+    rtoPermit: { type: String },
+    commercialPermit: { type: String },
 
     status: {
       type: String,

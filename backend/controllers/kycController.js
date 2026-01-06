@@ -36,15 +36,13 @@ export const submitKYC = async (req, res) => {
     }
 
     if (role === "transport") {
-      data.drivingLicense = req.files?.drivingLicense?.[0]?.filename || null;
-      data.vehicleRC = req.files?.vehicleRC?.[0]?.filename || null;
-      data.insurance = req.files?.insurance?.[0]?.filename || null;
-      data.pollution = req.files?.pollution?.[0]?.filename || null;
-      data.licenseNumber = req.body?.licenseNumber || null;
-      data.licenseExpiry = req.body?.licenseExpiry || null;
-      data.vehicleNumber = req.body?.vehicleNumber || null;
-      data.vehicleType = req.body?.vehicleType || null;
-      
+      data.businessLicense = req.files?.businessLicense?.[0]?.filename || null;
+      data.companyName = req.body?.companyName || null;
+      data.gstNumber = req.body?.gstNumber || null;
+      data.transporterId = req.body?.transporterId || null;
+      data.rtoPermit = req.files?.rtoPermit?.[0]?.filename || null;
+      data.commercialPermit = req.files?.commercialPermit?.[0]?.filename || null;
+
       console.log("Transport data:", data);
     }
 
@@ -57,21 +55,40 @@ export const submitKYC = async (req, res) => {
     }
 
     if (role === "transport") {
-      if (!data.drivingLicense || !data.vehicleRC) {
-        console.log("❌ Missing transport docs:", { drivingLicense: data.drivingLicense, vehicleRC: data.vehicleRC });
+      if (!data.businessLicense) {
+        console.log("❌ Missing business license:", { businessLicense: data.businessLicense });
         return res.status(400).json({
-          error: "Driving License and Vehicle RC are required for transporter",
+          error: "Business license is required for transporter",
         });
       }
-      if (!data.licenseNumber || !data.licenseExpiry || !data.vehicleNumber || !data.vehicleType) {
-        console.log("❌ Missing transport details:", { 
-          licenseNumber: data.licenseNumber,
-          licenseExpiry: data.licenseExpiry,
-          vehicleNumber: data.vehicleNumber,
-          vehicleType: data.vehicleType
-        });
+      if (!data.companyName) {
+        console.log("❌ Missing company name for transporter");
         return res.status(400).json({
-          error: "License number, expiry, vehicle number, and type are required",
+          error: "Transport company name is required",
+        });
+      }
+      if (!data.gstNumber) {
+        console.log("❌ Missing GST number for transporter");
+        return res.status(400).json({
+          error: "GST number is required for transporter",
+        });
+      }
+      if (!data.transporterId) {
+        console.log("❌ Missing transporter ID for transporter");
+        return res.status(400).json({
+          error: "Transporter ID / Registration No is required",
+        });
+      }
+      if (!data.rtoPermit) {
+        console.log("❌ Missing RTO permit for transporter");
+        return res.status(400).json({
+          error: "RTO-issued permit is required",
+        });
+      }
+      if (!data.commercialPermit) {
+        console.log("❌ Missing commercial permit for transporter");
+        return res.status(400).json({
+          error: "Commercial vehicle permit is required",
         });
       }
     }
