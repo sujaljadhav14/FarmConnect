@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 import {
   CheckCircle,
   XCircle,
-  HourglassSplit,
   FileEarmarkText,
   PersonBadge,
 } from "react-bootstrap-icons";
@@ -18,7 +17,7 @@ const AdminKYC = () => {
   const [loading, setLoading] = useState(false);
   const [remarks, setRemarks] = useState({});
 
-  const fetchAllKYC = async () => {
+  const fetchAllKYC = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await axios.get("/api/auth/get-all-kyc", {
@@ -30,7 +29,7 @@ const AdminKYC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [auth?.token]);
 
   const updateStatus = async (id, status) => {
     try {
@@ -49,7 +48,7 @@ const AdminKYC = () => {
 
   useEffect(() => {
     if (auth?.token) fetchAllKYC();
-  }, [auth?.token]);
+  }, [auth?.token, fetchAllKYC]);
 
   const statusBadge = (status) => {
     if (status === "approved")
@@ -99,13 +98,12 @@ const AdminKYC = () => {
                         {/* ROLE */}
                         <div className="mb-3">
                           <span
-                            className={`badge ${
-                              k.role === "farmer"
+                            className={`badge ${k.role === "farmer"
                                 ? "bg-success"
                                 : k.role === "trader"
-                                ? "bg-primary"
-                                : "bg-info"
-                            }`}
+                                  ? "bg-primary"
+                                  : "bg-info"
+                              }`}
                           >
                             {k.role.toUpperCase()}
                           </span>

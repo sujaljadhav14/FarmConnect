@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import FarmerMenu from "../../Dashboards/FamerMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { Pencil, Trash, Eye } from "react-bootstrap-icons";
+import { Pencil, Trash } from "react-bootstrap-icons";
 
 const MyCrops = () => {
     const navigate = useNavigate();
@@ -14,11 +14,7 @@ const MyCrops = () => {
     const { auth } = useAuth();
     const [deleteLoading, setDeleteLoading] = useState(null);
 
-    useEffect(() => {
-        fetchMyCrops();
-    }, []);
-
-    const fetchMyCrops = async () => {
+    const fetchMyCrops = useCallback(async () => {
         try {
             const { data } = await axios.get(
                 `/api/crops/my-crops`,
@@ -38,7 +34,11 @@ const MyCrops = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [auth?.token]);
+
+    useEffect(() => {
+        fetchMyCrops();
+    }, [fetchMyCrops]);
 
     const handleDelete = async (cropId) => {
         if (window.confirm("Are you sure you want to delete this crop?")) {

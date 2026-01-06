@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Layout from "../components/layout/Layout";
 import TransportMenu from "../Dashboards/TransportMenu";
 import { useAuth } from "../context/authContext";
@@ -10,13 +10,7 @@ const TransporterKYC_Data = () => {
   const [kyc, setKyc] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (auth?.token) {
-      fetchKYCData();
-    }
-  }, [auth?.token]);
-
-  const fetchKYCData = async () => {
+  const fetchKYCData = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await axios.get("/api/auth/my-kyc", {
@@ -32,7 +26,13 @@ const TransporterKYC_Data = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [auth?.token]);
+
+  useEffect(() => {
+    if (auth?.token) {
+      fetchKYCData();
+    }
+  }, [auth?.token, fetchKYCData]);
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -134,7 +134,7 @@ const TransporterKYC_Data = () => {
                         <span className="badge bg-info text-white me-2">1</span>
                         Personal Documents
                       </h5>
-                      
+
                       <DocumentCard
                         label="Aadhaar / PAN Card"
                         filename={kyc.aadhaarPan}
@@ -145,7 +145,7 @@ const TransporterKYC_Data = () => {
                         <span className="badge bg-info text-white me-2">2</span>
                         License Information
                       </h5>
-                      
+
                       <DocumentCard
                         label="Driving License"
                         filename={kyc.drivingLicense}
