@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import FarmerMenu from "../../Dashboards/FamerMenu";
@@ -16,11 +16,7 @@ const FarmerMyOrders = () => {
     const [loading, setLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState(null);
 
-    useEffect(() => {
-        fetchMyOrders();
-    }, []);
-
-    const fetchMyOrders = async () => {
+    const fetchMyOrders = useCallback(async () => {
         try {
             const { data } = await axios.get(
                 `/api/orders/farmer/my-orders`,
@@ -40,7 +36,11 @@ const FarmerMyOrders = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [auth?.token]);
+
+    useEffect(() => {
+        fetchMyOrders();
+    }, [fetchMyOrders]);
 
     const handleAcceptOrder = async (orderId) => {
         if (window.confirm("Accept this order?")) {

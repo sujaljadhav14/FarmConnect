@@ -26,7 +26,7 @@ const TraderKYC = () => {
   const gstRef = useRef();
   const businessRef = useRef();
 
-  const fetchMyKYC = async () => {
+  const fetchMyKYC = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/auth/my-kyc", {
         headers: { Authorization: `Bearer ${auth?.token}` },
@@ -35,7 +35,7 @@ const TraderKYC = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [auth?.token]);
 
   useEffect(() => {
     if (auth?.token) fetchMyKYC();
@@ -117,13 +117,12 @@ const TraderKYC = () => {
 
               {kycStatus && kycStatus !== "not_submitted" && (
                 <div
-                  className={`alert ${
-                    kycStatus === "approved"
+                  className={`alert ${kycStatus === "approved"
                       ? "alert-success"
                       : kycStatus === "rejected"
-                      ? "alert-danger"
-                      : "alert-warning"
-                  }`}
+                        ? "alert-danger"
+                        : "alert-warning"
+                    }`}
                 >
                   <div className="d-flex justify-content-between align-items-center">
                     <div>

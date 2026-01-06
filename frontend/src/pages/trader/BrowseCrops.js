@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Layout from "../../components/layout/Layout";
 import TraderMenu from "../../Dashboards/TraderMenu";
 import CropCard from "../../components/shared/CropCard";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { Search, Funnel } from "react-bootstrap-icons";
+import { Search } from "react-bootstrap-icons";
 
 const BrowseCrops = () => {
     const [crops, setCrops] = useState([]);
@@ -21,15 +21,7 @@ const BrowseCrops = () => {
         location: "",
     });
 
-    useEffect(() => {
-        fetchAvailableCrops();
-    }, []);
-
-    useEffect(() => {
-        applyFilters();
-    }, [searchTerm, filters, crops]);
-
-    const fetchAvailableCrops = async () => {
+    const fetchAvailableCrops = useCallback(async () => {
         try {
             const { data } = await axios.get(
                 `/api/crops/available`,
@@ -50,9 +42,9 @@ const BrowseCrops = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [auth?.token]);
 
-    const applyFilters = () => {
+    const applyFilters = useCallback(() => {
         let filtered = [...crops];
 
         // Search by crop name
@@ -93,7 +85,15 @@ const BrowseCrops = () => {
         }
 
         setFilteredCrops(filtered);
-    };
+    }, [searchTerm, filters, crops]);
+
+    useEffect(() => {
+        fetchAvailableCrops();
+    }, [fetchAvailableCrops]);
+
+    useEffect(() => {
+        applyFilters();
+    }, [applyFilters]);
 
     const handleFilterChange = (e) => {
         setFilters({

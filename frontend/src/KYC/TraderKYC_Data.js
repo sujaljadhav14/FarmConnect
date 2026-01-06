@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Layout from "../components/layout/Layout";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -11,7 +11,7 @@ const TraderKYC_Data = () => {
   const [kyc, setKyc] = useState(null);
   const [status, setStatus] = useState("loading");
 
-  const fetchMyKYC = async () => {
+  const fetchMyKYC = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/auth/my-kyc", {
         headers: {
@@ -31,11 +31,11 @@ const TraderKYC_Data = () => {
       toast.error("Failed to load KYC details");
       setStatus("error");
     }
-  };
+  }, [auth?.token]);
 
   useEffect(() => {
     if (auth?.token) fetchMyKYC();
-  }, [auth?.token]);
+  }, [auth?.token, fetchMyKYC]);
 
   const badgeClass = {
     pending: "warning",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import FarmerMenu from "../../Dashboards/FamerMenu";
@@ -23,14 +23,7 @@ const AddCrop = () => {
         description: "",
     });
 
-    // If editing, fetch crop data
-    useEffect(() => {
-        if (id) {
-            fetchCropData();
-        }
-    }, [id]);
-
-    const fetchCropData = async () => {
+    const fetchCropData = useCallback(async () => {
         try {
             const headers = auth?.token ? { Authorization: `Bearer ${auth.token}` } : {};
             const { data } = await axios.get(
@@ -56,7 +49,14 @@ const AddCrop = () => {
             console.error("Error fetching crop:", error);
             toast.error("Failed to load crop data");
         }
-    };
+    }, [id, auth?.token]);
+
+    // If editing, fetch crop data
+    useEffect(() => {
+        if (id) {
+            fetchCropData();
+        }
+    }, [id, fetchCropData]);
 
     const handleChange = (e) => {
         setFormData({
