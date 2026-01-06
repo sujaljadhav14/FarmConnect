@@ -1,15 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import { ArrowLeft, CheckCircle, ExclamationCircle } from "react-bootstrap-icons";
 import axios from "axios";
 
 const AddVehicle = () => {
   const navigate = useNavigate();
-  const { vehicleId } = useParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
 
   const [formData, setFormData] = useState({
     vehicleName: "",
@@ -22,10 +25,9 @@ const AddVehicle = () => {
     registrationCertificate: "",
     insuranceCertificate: "",
     pollutionCertificate: "",
+    vehicleImage: "",
     loadCapacity: "",
     loadCapacityUnit: "kg",
-    baseFare: "",
-    farePerKm: "",
     notes: "",
   });
 
@@ -68,13 +70,64 @@ const AddVehicle = () => {
       return false;
     }
 
-    if (!formData.loadCapacity || !formData.baseFare || !formData.farePerKm) {
-      setError("Load capacity and fares are required");
+    if (
+      !formData.registrationCertificate ||
+      !formData.insuranceCertificate
+    ) {
+      setError("Registration and insurance certificates are required");
+      return false;
+    }
+
+    if (!formData.vehicleImage) {
+      setError("Vehicle photo is required");
       return false;
     }
 
     return true;
   };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((track) => track.stop());
+      setCameraStream(null);
+    }
+    setIsCameraActive(false);
+  };
+
+  const startCamera = async () => {
+    try {
+      setError("");
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setCameraStream(stream);
+      setIsCameraActive(true);
+    } catch (err) {
+      console.error("Camera start error", err);
+      setError("Unable to access camera. Please allow camera permissions.");
+    }
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL("image/jpeg");
+    setFormData((prev) => ({ ...prev, vehicleImage: dataUrl }));
+    stopCamera();
+  };
+
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,7 +140,23 @@ const AddVehicle = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const authData = JSON.parse(localStorage.getItem("auth") || "{}");
+      const token = authData.token;
+
+      if (!token) {
+        setError("Authentication required. Please login again.");
+        navigate("/login");
+
+              console.log("Submitting vehicle data:", {
+                vehicleName: formData.vehicleName,
+                vehicleNumber: formData.vehicleNumber,
+                hasImage: !!formData.vehicleImage,
+                imageLength: formData.vehicleImage?.length,
+                registrationCert: formData.registrationCertificate,
+                insuranceCert: formData.insuranceCertificate,
+              });
+        return;
+      }
 
       const response = await axios.post("/api/vehicles/add", formData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -101,8 +170,10 @@ const AddVehicle = () => {
       }
     } catch (err) {
       console.error("Error adding vehicle:", err);
+      console.error("Error response:", err.response);
+      console.error("Error data:", err.response?.data);
       setError(
-        err.response?.data?.message || "Failed to add vehicle. Please try again."
+        err.response?.data?.message || err.message || "Failed to add vehicle. Please try again."
       );
     } finally {
       setLoading(false);
@@ -270,7 +341,6 @@ const AddVehicle = () => {
                         onChange={handleChange}
                         placeholder="e.g., 1000"
                         step="0.01"
-                        required
                       />
                     </div>
 
@@ -300,100 +370,98 @@ const AddVehicle = () => {
                   </div>
                 </section>
 
-                {/* Capacity Information */}
+                {/* Vehicle Photo */}
                 <section className="mb-5">
                   <h5 className="text-success mb-3 border-bottom pb-2">
-                    Capacity Details
+                    Vehicle Photo (Live Capture) <span className="text-danger">*</span>
                   </h5>
+                  <p className="text-muted small mb-3">
+                    Capture a clear photo of the vehicle using your camera.
+                  </p>
 
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <label htmlFor="loadCapacity" className="form-label">
-                        Load Capacity <span className="text-danger">*</span>
-                      </label>
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          className="form-control"
-                          id="loadCapacity"
-                          name="loadCapacity"
-                          value={formData.loadCapacity}
-                          onChange={handleChange}
-                          placeholder="e.g., 1000"
-                          step="0.01"
-                          required
-                        />
-                        <select
-                          className="form-select"
-                          style={{ maxWidth: "100px" }}
-                          name="loadCapacityUnit"
-                          value={formData.loadCapacityUnit}
-                          onChange={handleChange}
-                        >
-                          {weightUnits.map((unit) => (
-                            <option key={unit} value={unit}>
-                              {unit}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                  <div className="d-flex flex-column flex-md-row gap-3 align-items-start">
+                    <div className="flex-grow-1">
+                      {formData.vehicleImage ? (
+                        <div className="mb-3">
+                          <label className="form-label">Captured Photo</label>
+                          <div className="border rounded p-2 text-center">
+                            <img
+                              src={formData.vehicleImage}
+                              alt="Vehicle"
+                              className="img-fluid"
+                              style={{ maxHeight: "260px" }}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary mt-2"
+                            onClick={() => {
+                              setFormData((prev) => ({ ...prev, vehicleImage: "" }));
+                              startCamera();
+                            }}
+                          >
+                            Retake Photo
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="mb-2 d-flex gap-2">
+                            <button
+                              type="button"
+                              className="btn btn-success"
+                              onClick={startCamera}
+                              disabled={isCameraActive}
+                            >
+                              {isCameraActive ? "Camera On" : "Start Camera"}
+                            </button>
+                            {isCameraActive && (
+                              <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={stopCamera}
+                              >
+                                Stop
+                              </button>
+                            )}
+                          </div>
+                          {isCameraActive && (
+                            <div className="border rounded p-2">
+                              <video
+                                ref={videoRef}
+                                autoPlay
+                                muted
+                                playsInline
+                                className="w-100"
+                                style={{ maxHeight: "280px" }}
+                              />
+                              <div className="text-end mt-2">
+                                <button
+                                  type="button"
+                                  className="btn btn-primary"
+                                  onClick={capturePhoto}
+                                >
+                                  Capture Photo
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </section>
-
-                {/* Pricing Information */}
-                <section className="mb-5">
-                  <h5 className="text-success mb-3 border-bottom pb-2">
-                    Pricing
-                  </h5>
-
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <label htmlFor="baseFare" className="form-label">
-                        Base Fare (₹) <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="baseFare"
-                        name="baseFare"
-                        value={formData.baseFare}
-                        onChange={handleChange}
-                        placeholder="e.g., 500"
-                        step="0.01"
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-6">
-                      <label htmlFor="farePerKm" className="form-label">
-                        Fare per KM (₹) <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="farePerKm"
-                        name="farePerKm"
-                        value={formData.farePerKm}
-                        onChange={handleChange}
-                        placeholder="e.g., 10"
-                        step="0.01"
-                        required
-                      />
-                    </div>
-                  </div>
+                  <canvas ref={canvasRef} className="d-none" />
                 </section>
 
                 {/* Certifications */}
                 <section className="mb-5">
                   <h5 className="text-success mb-3 border-bottom pb-2">
-                    Certifications & Documents
+                    Certifications & Documents <span className="text-danger">*</span>
                   </h5>
 
                   <div className="row mb-3">
                     <div className="col-md-4">
                       <label htmlFor="registrationCertificate" className="form-label">
-                        Registration Certificate Link/Number
+                        Registration Certificate Link/Number <span className="text-danger">*</span>
                       </label>
                       <input
                         type="text"
@@ -403,12 +471,13 @@ const AddVehicle = () => {
                         value={formData.registrationCertificate}
                         onChange={handleChange}
                         placeholder="Ref. number"
+                        required
                       />
                     </div>
 
                     <div className="col-md-4">
                       <label htmlFor="insuranceCertificate" className="form-label">
-                        Insurance Certificate Link/Number
+                        Insurance Certificate Link/Number <span className="text-danger">*</span>
                       </label>
                       <input
                         type="text"
@@ -418,6 +487,7 @@ const AddVehicle = () => {
                         value={formData.insuranceCertificate}
                         onChange={handleChange}
                         placeholder="Ref. number"
+                        required
                       />
                     </div>
 
