@@ -36,6 +36,7 @@ import CropDetails from "./pages/trader/CropDetails";
 import PlaceOrder from "./pages/trader/PlaceOrder";
 import TraderMyOrders from "./pages/trader/MyOrders";
 import ConfirmAgreement from "./pages/trader/ConfirmAgreement";
+import TraderAnalytics from "./pages/trader/TraderAnalytics";
 
 // Transport Pages
 import AvailableDeliveries from "./pages/transport/AvailableDeliveries";
@@ -212,6 +213,14 @@ const App = () => {
           element={
             <RoleProtectedRoute role="trader">
               <TraderKYC_Data />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/trader/analytics"
+          element={
+            <RoleProtectedRoute role="trader">
+              <TraderAnalytics />
             </RoleProtectedRoute>
           }
         />
