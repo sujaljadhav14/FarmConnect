@@ -21,7 +21,14 @@ const VehicleManagement = () => {
   const fetchVehicles = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const authData = JSON.parse(localStorage.getItem("auth") || "{}");
+      const token = authData.token;
+
+      if (!token) {
+        setError("Authentication required. Please login again.");
+        navigate("/login");
+        return;
+      }
       const response = await axios.get("/api/vehicles/my-vehicles", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -55,7 +62,13 @@ const VehicleManagement = () => {
     if (!vehicleToDelete) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const authData = JSON.parse(localStorage.getItem("auth") || "{}");
+      const token = authData.token;
+      if (!token) {
+        setError("Authentication required. Please login again.");
+        navigate("/login");
+        return;
+      }
       const response = await axios.delete(
         `/api/vehicles/${vehicleToDelete._id}/delete`,
         {
@@ -80,7 +93,13 @@ const VehicleManagement = () => {
     try {
       const newStatus =
         currentStatus === "available" ? "maintenance" : "available";
-      const token = localStorage.getItem("token");
+      const authData = JSON.parse(localStorage.getItem("auth") || "{}");
+      const token = authData.token;
+      if (!token) {
+        setError("Authentication required. Please login again.");
+        navigate("/login");
+        return;
+      }
 
       const response = await axios.put(
         `/api/vehicles/${vehicleId}/availability`,
@@ -197,6 +216,16 @@ const VehicleManagement = () => {
                     </div>
 
                     <div className="card-body">
+                      {vehicle.vehicleImage && (
+                        <div className="mb-3 text-center">
+                          <img
+                            src={vehicle.vehicleImage}
+                            alt={vehicle.vehicleName}
+                            className="img-fluid rounded"
+                            style={{ maxHeight: "180px" }}
+                          />
+                        </div>
+                      )}
                       {/* Status Badge */}
                       <div className="mb-3">
                         <span
@@ -243,16 +272,6 @@ const VehicleManagement = () => {
                           <span className="value">
                             {vehicle.loadCapacity} {vehicle.loadCapacityUnit}
                           </span>
-                        </div>
-
-                        {/* Pricing */}
-                        <div className="detail-row">
-                          <span className="label">Base Fare:</span>
-                          <span className="value">₹{vehicle.baseFare}</span>
-                        </div>
-                        <div className="detail-row">
-                          <span className="label">Per KM Fare:</span>
-                          <span className="value">₹{vehicle.farePerKm}/km</span>
                         </div>
 
                         {/* Certifications */}

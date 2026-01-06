@@ -90,7 +90,7 @@ const AvailableOrders = () => {
           vehicleId: selectedVehicle._id,
           vehicleType: selectedVehicle.vehicleType,
           vehicleNumber: selectedVehicle.vehicleNumber,
-          deliveryFee: selectedVehicle.baseFare + selectedVehicle.farePerKm * 10, // Estimated fee
+          deliveryFee: 0,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -406,22 +406,36 @@ const AvailableOrders = () => {
                                     </div>
                                   </div>
 
+                                  {vehicle.vehicleImage && (
+                                    <div className="mb-2 text-center">
+                                      <img
+                                        src={vehicle.vehicleImage}
+                                        alt={vehicle.vehicleName}
+                                        className="img-fluid rounded"
+                                        style={{ maxHeight: "140px" }}
+                                      />
+                                    </div>
+                                  )}
                                   <div className="row g-2 text-sm">
                                     <div className="col-6">
                                       <small className="text-muted">
-                                        Base Fare
+                                        Registration Cert.
                                       </small>
                                       <p className="mb-0">
-                                        <strong>₹{vehicle.baseFare}</strong>
+                                        <strong>
+                                          {vehicle.registrationCertificate || "-"}
+                                        </strong>
                                       </p>
                                     </div>
                                     <div className="col-6">
                                       <small className="text-muted">
-                                        Per KM Fare
+                                        Insurance/PUC
                                       </small>
                                       <p className="mb-0">
                                         <strong>
-                                          ₹{vehicle.farePerKm}/km
+                                          {vehicle.insuranceCertificate && vehicle.pollutionCertificate
+                                            ? "Provided"
+                                            : "Missing"}
                                         </strong>
                                       </p>
                                     </div>
