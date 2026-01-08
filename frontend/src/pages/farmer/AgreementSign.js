@@ -5,7 +5,7 @@ import FarmerMenu from "../../Dashboards/FamerMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { ArrowLeft, CheckCircle, FileText, Award, Download, PenFill } from "react-bootstrap-icons";
+import { ArrowLeft, CheckCircle, FileText, Award, PenFill } from "react-bootstrap-icons";
 import { generateSignedAgreement } from "../../utils/generateSignedAgreement";
 
 const AgreementSign = () => {

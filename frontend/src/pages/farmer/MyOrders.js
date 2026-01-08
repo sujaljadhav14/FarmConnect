@@ -42,39 +42,7 @@ const FarmerMyOrders = () => {
         fetchMyOrders();
     }, [fetchMyOrders]);
 
-    const handleAcceptOrder = async (orderId) => {
-        if (window.confirm("Accept this order?")) {
-            setActionLoading(orderId);
-            try {
-                const { data } = await axios.put(
-                    `/api/orders/accept/${orderId}`,
-                    {},
-                    {
-                        headers: {
-                            Authorization: `Bearer ${auth?.token}`,
-                        },
-                    }
-                );
 
-                if (data.success) {
-                    toast.success("Order accepted successfully!");
-
-                    // ✅ THIS LINE CREATES & DOWNLOADS THE AGREEMENT PDF
-                    generateOrderAgreement(data.order);
-
-                    fetchMyOrders();
-                }
-                else {
-                    toast.error(data.message);
-                }
-            } catch (error) {
-                console.error("Error accepting order:", error);
-                toast.error(error.response?.data?.message || "Failed to accept order");
-            } finally {
-                setActionLoading(null);
-            }
-        }
-    };
 
     const handleRejectOrder = async (orderId) => {
         const reason = prompt("Enter rejection reason:");

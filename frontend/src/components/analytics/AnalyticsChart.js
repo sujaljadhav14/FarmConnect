@@ -8,7 +8,7 @@ const AnalyticsChart = ({ data }) => {
         let cancelled = false;
         const load = async () => {
             try {
-                const [{ Line }, chartjs] = await Promise.all([
+                const [{ Line }] = await Promise.all([
                     import("react-chartjs-2"),
                     import("chart.js/auto"),
                 ]);

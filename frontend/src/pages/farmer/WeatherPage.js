@@ -7,8 +7,6 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
 import {
     Cloud,
-    CloudRain,
-    Sun,
     Wind,
     Droplet,
     Eye,
@@ -22,7 +20,6 @@ import {
 
 const WeatherPage = () => {
     const { auth } = useAuth();
-    const navigate = useNavigate();
     const [weatherLocations, setWeatherLocations] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
@@ -201,10 +198,10 @@ const WeatherPage = () => {
                                     <div
                                         key={idx}
                                         className={`alert alert-${alert.severity === "severe"
-                                                ? "danger"
-                                                : alert.severity === "high"
-                                                    ? "warning"
-                                                    : "info"
+                                            ? "danger"
+                                            : alert.severity === "high"
+                                                ? "warning"
+                                                : "info"
                                             } d-flex justify-content-between align-items-center`}
                                         role="alert"
                                     >

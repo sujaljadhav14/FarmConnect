@@ -5,7 +5,7 @@ import TraderMenu from "../../Dashboards/TraderMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { ArrowLeft, CheckCircle, FileText, CashStack, Truck, Download, PenFill, Award } from "react-bootstrap-icons";
+import { ArrowLeft, CheckCircle, FileText, CashStack, Truck, PenFill, Award } from "react-bootstrap-icons";
 import { generateSignedAgreement } from "../../utils/generateSignedAgreement";
 
 const ConfirmAgreement = () => {
