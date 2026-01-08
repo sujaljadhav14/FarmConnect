@@ -29,6 +29,7 @@ import CommunityPage from "./pages/farmer/CommunityPage";
 import FarmCalendarPage from "./pages/farmer/FarmCalendarPage";
 import WeatherPage from "./pages/farmer/WeatherPage";
 import AgreementSign from "./pages/farmer/AgreementSign";
+import MarketPrices from "./pages/farmer/MarketPrices";
 
 // Trader Pages
 import BrowseCrops from "./pages/trader/BrowseCrops";
@@ -141,6 +142,14 @@ const App = () => {
           element={
             <RoleProtectedRoute role="farmer">
               <WeatherPage />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/farmer/market-prices"
+          element={
+            <RoleProtectedRoute role="farmer">
+              <MarketPrices />
             </RoleProtectedRoute>
           }
         />
