@@ -8,7 +8,7 @@ const useWeatherSocket = (userId, onWeatherUpdate, onWeatherAlert) => {
     if (!userId) return;
 
     // Connect to socket
-    socket.current = io(process.env.REACT_APP_API);
+    socket.current = io(process.env.REACT_APP_API_URL || "http://localhost:8080");
 
     // Join weather room
     socket.current.emit("subscribe-weather-alerts", userId);

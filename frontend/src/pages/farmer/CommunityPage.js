@@ -41,7 +41,7 @@ const CommunityPage = () => {
         getPosts();
 
         // Socket implementation
-        socket.current = io(process.env.REACT_APP_API);
+        socket.current = io(process.env.REACT_APP_API_URL || "http://localhost:8080");
 
         socket.current.on("newPost", (newPost) => {
             setPosts((prev) => [newPost, ...prev]);
