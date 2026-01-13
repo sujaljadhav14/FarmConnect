@@ -18,6 +18,7 @@ const ConfirmAgreement = () => {
     const [agreement, setAgreement] = useState(null);
     const [digitalSignature, setDigitalSignature] = useState("");
     const [termsAccepted, setTermsAccepted] = useState(false);
+    const [platformDisclaimerAccepted, setPlatformDisclaimerAccepted] = useState(false);
 
     useEffect(() => {
         fetchOrderAndAgreement();
@@ -71,6 +72,11 @@ const ConfirmAgreement = () => {
             return;
         }
 
+        if (!platformDisclaimerAccepted) {
+            toast.error("Please accept the platform disclaimer");
+            return;
+        }
+
         if (!digitalSignature.trim()) {
             toast.error("Please enter your name as digital signature");
             return;
@@ -84,7 +90,10 @@ const ConfirmAgreement = () => {
         try {
             const { data } = await axios.post(
                 `/api/agreements/trader-sign/${orderId}`,
-                { digitalSignature },
+                {
+                    digitalSignature,
+                    platformDisclaimerAccepted,
+                },
                 {
                     headers: { Authorization: `Bearer ${auth?.token}` },
                 }
@@ -93,15 +102,18 @@ const ConfirmAgreement = () => {
             if (data.success) {
                 toast.success("Agreement confirmed! Downloading signed agreement...");
 
+                // Refresh agreement to get latest with trader signature
+                const updatedAgreement = data.agreement;
+
                 // Generate the final signed agreement PDF with both signatures
                 generateSignedAgreement(order, {
                     farmerSigned: true,
-                    farmerName: agreement?.farmerAgreement?.qualityCommitment ? order?.farmerId?.name : order?.farmerId?.name,
-                    farmerSignedAt: agreement?.farmerAgreement?.signedAt || new Date(),
+                    farmerName: updatedAgreement?.farmerAgreement?.digitalSignature || order?.farmerId?.name,
+                    farmerSignedAt: updatedAgreement?.farmerAgreement?.signedAt || new Date(),
                     traderSigned: true,
-                    traderName: digitalSignature,
+                    traderName: digitalSignature, // Trader's typed signature (just signed)
                     traderSignedAt: new Date(),
-                }, agreement);
+                }, updatedAgreement);
 
                 // Navigate to orders page
                 setTimeout(() => {
@@ -218,10 +230,18 @@ const ConfirmAgreement = () => {
                                                     <td className="text-muted">Farmer:</td>
                                                     <td><strong>{order?.farmerId?.name}</strong></td>
                                                 </tr>
-                                                <tr>
-                                                    <td className="text-muted">Contact:</td>
-                                                    <td>{order?.farmerId?.phone || "N/A"}</td>
-                                                </tr>
+                                                {/* Contact shown only after agreement is complete */}
+                                                {agreement?.status === "completed" ? (
+                                                    <tr>
+                                                        <td className="text-muted">Contact:</td>
+                                                        <td>{order?.farmerId?.phone || "N/A"}</td>
+                                                    </tr>
+                                                ) : (
+                                                    <tr>
+                                                        <td className="text-muted">Contact:</td>
+                                                        <td><span className="badge bg-warning text-dark">🔒 Visible after signing</span></td>
+                                                    </tr>
+                                                )}
                                             </tbody>
                                         </table>
                                     </div>
@@ -348,7 +368,7 @@ const ConfirmAgreement = () => {
                                         </div>
 
                                         {/* Accept Terms */}
-                                        <div className="form-check mb-4">
+                                        <div className="form-check mb-3">
                                             <input
                                                 type="checkbox"
                                                 className="form-check-input"
@@ -358,8 +378,36 @@ const ConfirmAgreement = () => {
                                                 required
                                             />
                                             <label className="form-check-label" htmlFor="termsAccepted">
-                                                <strong>I accept the terms and agree to pay 30% advance</strong>
+                                                <strong>I accept the terms and agree to the payment terms</strong>
                                             </label>
+                                        </div>
+
+                                        {/* Platform Disclaimer */}
+                                        <div className="alert alert-warning mb-3">
+                                            <h6 className="alert-heading">⚠️ Platform Disclaimer</h6>
+                                            <p className="small mb-2">
+                                                Sudeshm Agro is only a trading platform that connects farmers and traders.
+                                                The platform is <strong>not responsible</strong> for:
+                                            </p>
+                                            <ul className="small mb-2">
+                                                <li>Quality disputes between parties</li>
+                                                <li>Payment delays or defaults</li>
+                                                <li>Transport damages or delays</li>
+                                                <li>Any direct financial losses</li>
+                                            </ul>
+                                            <div className="form-check">
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-check-input"
+                                                    id="platformDisclaimer"
+                                                    checked={platformDisclaimerAccepted}
+                                                    onChange={(e) => setPlatformDisclaimerAccepted(e.target.checked)}
+                                                    required
+                                                />
+                                                <label className="form-check-label" htmlFor="platformDisclaimer">
+                                                    <strong>I understand and accept the platform disclaimer</strong>
+                                                </label>
+                                            </div>
                                         </div>
 
                                         {/* Digital Signature */}

@@ -17,6 +17,16 @@ const cropSchema = new mongoose.Schema(
             required: true,
             enum: ["Grains", "Vegetables", "Fruits", "Pulses", "Spices", "Other"],
         },
+        // NEW: Crop variety (e.g., Alphonso for Mango)
+        variety: {
+            type: String,
+            trim: true,
+        },
+        // NEW: Land under cultivation for this crop (in acres)
+        landUnderCultivation: {
+            type: Number,
+            min: 0,
+        },
         quantity: {
             type: Number,
             required: true,
@@ -33,6 +43,11 @@ const cropSchema = new mongoose.Schema(
             required: true,
             min: 0,
         },
+        // NEW: Expected price per unit (farmer's expectation)
+        expectedPricePerUnit: {
+            type: Number,
+            min: 0,
+        },
         quality: {
             type: String,
             enum: ["A+", "A", "B", "C"],
@@ -42,10 +57,26 @@ const cropSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
+        // NEW: Expected harvest date (before actual harvest)
+        expectedHarvestDate: {
+            type: Date,
+        },
+        // NEW: Cultivation start date
+        cultivationDate: {
+            type: Date,
+        },
+        // UPDATED: Structured location object
         location: {
             type: String,
-            required: true,
             trim: true,
+        },
+        // NEW: Detailed structured location
+        locationDetails: {
+            village: { type: String, trim: true },
+            tehsil: { type: String, trim: true },
+            district: { type: String, trim: true },
+            state: { type: String, trim: true },
+            pincode: { type: String, trim: true },
         },
         availabilityDate: {
             type: Date,
@@ -54,6 +85,13 @@ const cropSchema = new mongoose.Schema(
         images: {
             type: [String],
             default: [],
+        },
+        // NEW: Geotagged image with location metadata
+        geotaggedImage: {
+            url: { type: String },
+            latitude: { type: Number },
+            longitude: { type: Number },
+            capturedAt: { type: Date },
         },
         description: {
             type: String,

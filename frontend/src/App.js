@@ -30,12 +30,14 @@ import FarmCalendarPage from "./pages/farmer/FarmCalendarPage";
 import WeatherPage from "./pages/farmer/WeatherPage";
 import AgreementSign from "./pages/farmer/AgreementSign";
 import MarketPrices from "./pages/farmer/MarketPrices";
+import BankDetails from "./pages/farmer/BankDetails";
 
 // Trader Pages
 import BrowseCrops from "./pages/trader/BrowseCrops";
 import CropDetails from "./pages/trader/CropDetails";
 import PlaceOrder from "./pages/trader/PlaceOrder";
 import TraderMyOrders from "./pages/trader/MyOrders";
+import TraderOrderDetails from "./pages/trader/OrderDetails";
 import ConfirmAgreement from "./pages/trader/ConfirmAgreement";
 import TraderAnalytics from "./pages/trader/TraderAnalytics";
 
@@ -114,6 +116,14 @@ const App = () => {
           }
         />
         <Route
+          path="/farmer/my-orders"
+          element={
+            <RoleProtectedRoute role="farmer">
+              <FarmerMyOrders />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
           path="/farmer/order/:id"
           element={
             <RoleProtectedRoute role="farmer">
@@ -150,6 +160,14 @@ const App = () => {
           element={
             <RoleProtectedRoute role="farmer">
               <MarketPrices />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/farmer/bank-details"
+          element={
+            <RoleProtectedRoute role="farmer">
+              <BankDetails />
             </RoleProtectedRoute>
           }
         />
@@ -198,6 +216,14 @@ const App = () => {
           element={
             <RoleProtectedRoute role="trader">
               <TraderMyOrders />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/trader/order/:id"
+          element={
+            <RoleProtectedRoute role="trader">
+              <TraderOrderDetails />
             </RoleProtectedRoute>
           }
         />

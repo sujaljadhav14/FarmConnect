@@ -177,6 +177,12 @@ export const generateSignedAgreement = (order, signatures, agreement = null) => 
     });
 
     // ===== DIGITAL SIGNATURES =====
+    // Check if we need a new page for signatures
+    if (y > 220) {
+        doc.addPage();
+        y = 20; // Reset to top of new page
+    }
+
     y += 10;
     doc.setFont("times", "bold");
     doc.text("7. DIGITAL SIGNATURES", left, y);

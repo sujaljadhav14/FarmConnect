@@ -103,3 +103,48 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// GET /api/auth/profile
+// Get current user profile
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    return res.status(200).json({ success: true, user });
+  } catch (err) {
+    console.error("getProfile error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// PUT /api/auth/update-bank-details
+// Update user's bank details
+export const updateBankDetails = async (req, res) => {
+  try {
+    const { bankDetails } = req.body;
+
+    if (!bankDetails) {
+      return res.status(400).json({ success: false, message: "Bank details are required" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { bankDetails },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Bank details updated successfully",
+      user
+    });
+  } catch (err) {
+    console.error("updateBankDetails error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};

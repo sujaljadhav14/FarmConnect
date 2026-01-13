@@ -95,7 +95,7 @@ const seedUsers = async () => {
         console.log("\n📋 ============ LOGIN CREDENTIALS ============\n");
 
         console.log("🔐 ADMIN LOGIN:");
-        console.log("   Phone: +919999999999");
+        console.log("   Phone: +919999999999"); 
         console.log("   Password: admin123\n");
 
         console.log("👨‍🌾 FARMER LOGINS:");

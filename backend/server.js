@@ -14,6 +14,8 @@ import weatherRoutes from "./routes/weatherRoutes.js";
 import agreementRoutes from "./routes/agreementRoutes.js";
 import vehicleManagementRoutes from "./routes/vehicleManagementRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
+import proposalRoutes from "./routes/proposalRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 import dbConnect from "./config/db.js";
 import path from "path";
 import { scheduleWeatherUpdates } from "./utils/weatherScheduler.js";
@@ -72,6 +74,8 @@ app.use("/api/weather", weatherRoutes);
 app.use("/api/agreements", agreementRoutes);
 app.use("/api/vehicles", vehicleManagementRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/proposals", proposalRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 const PORT = process.env.PORT || 8080;
 

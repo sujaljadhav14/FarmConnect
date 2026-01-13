@@ -5,7 +5,8 @@ import TraderMenu from "../../Dashboards/TraderMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { Eye, XCircle, CheckCircle, CashStack } from "react-bootstrap-icons";
+import { Eye, XCircle, CheckCircle, CashStack, FileEarmarkPdf } from "react-bootstrap-icons";
+import { generateSignedAgreement } from "../../utils/generateSignedAgreement";
 
 const MyOrders = () => {
     const navigate = useNavigate();
@@ -14,11 +15,7 @@ const MyOrders = () => {
     const { auth } = useAuth();
     const [cancelLoading, setCancelLoading] = useState(null);
 
-    useEffect(() => {
-        fetchMyOrders();
-    }, []);
-
-    const fetchMyOrders = async () => {
+    const fetchMyOrders = React.useCallback(async () => {
         try {
             const { data } = await axios.get(
                 `/api/orders/trader/my-orders`,
@@ -38,7 +35,11 @@ const MyOrders = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [auth?.token]);
+
+    useEffect(() => {
+        fetchMyOrders();
+    }, [fetchMyOrders]);
 
     const handleCancelOrder = async (orderId) => {
         if (window.confirm("Are you sure you want to cancel this order?")) {
@@ -253,15 +254,44 @@ const MyOrders = () => {
                                                                     </button>
                                                                 )}
 
-                                                                {/* Both Agreed: Pay Advance */}
+                                                                {/* Both Agreed: Pay Advance + Download Agreement */}
                                                                 {order.orderStatus === "Both Agreed" && (
-                                                                    <button
-                                                                        className="btn btn-sm btn-warning"
-                                                                        onClick={() => navigate(`/trader/pay-advance/${order._id}`)}
-                                                                    >
-                                                                        <CashStack size={14} className="me-1" />
-                                                                        Pay 30% Advance (₹{Math.round(order.totalPrice * 0.30)})
-                                                                    </button>
+                                                                    <>
+                                                                        <button
+                                                                            className="btn btn-sm btn-success"
+                                                                            onClick={async () => {
+                                                                                try {
+                                                                                    const { data } = await axios.get(
+                                                                                        `/api/agreements/${order._id}`,
+                                                                                        { headers: { Authorization: `Bearer ${auth?.token}` } }
+                                                                                    );
+                                                                                    if (data.success) {
+                                                                                        generateSignedAgreement(order, {
+                                                                                            farmerSigned: true,
+                                                                                            farmerName: data.agreement?.farmerAgreement?.digitalSignature || order?.farmerId?.name,
+                                                                                            farmerSignedAt: data.agreement?.farmerAgreement?.signedAt,
+                                                                                            traderSigned: true,
+                                                                                            traderName: data.agreement?.traderAgreement?.digitalSignature || auth?.user?.name,
+                                                                                            traderSignedAt: data.agreement?.traderAgreement?.signedAt,
+                                                                                        }, data.agreement);
+                                                                                        toast.success("Agreement downloaded!");
+                                                                                    }
+                                                                                } catch (err) {
+                                                                                    toast.error("Failed to download agreement");
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            <FileEarmarkPdf size={14} className="me-1" />
+                                                                            Download Agreement
+                                                                        </button>
+                                                                        <button
+                                                                            className="btn btn-sm btn-warning"
+                                                                            onClick={() => navigate(`/trader/pay-advance/${order._id}`)}
+                                                                        >
+                                                                            <CashStack size={14} className="me-1" />
+                                                                            Pay 30% Advance (₹{Math.round(order.totalPrice * 0.30)})
+                                                                        </button>
+                                                                    </>
                                                                 )}
 
                                                                 {/* Pending: Cancel */}
