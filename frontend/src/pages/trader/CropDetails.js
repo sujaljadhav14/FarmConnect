@@ -12,6 +12,8 @@ import {
     Telephone,
     Cart3,
     ArrowLeft,
+    Tag,
+    Map,
 } from "react-bootstrap-icons";
 
 const CropDetails = () => {
@@ -22,8 +24,10 @@ const CropDetails = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchCropDetails();
-    }, [id]);
+        if (auth?.token) {
+            fetchCropDetails();
+        }
+    }, [id, auth?.token]);
 
     const fetchCropDetails = async () => {
         try {
@@ -76,6 +80,26 @@ const CropDetails = () => {
                 Grade {quality}
             </span>
         );
+    };
+
+    // Helper to format location
+    const formatLocation = () => {
+        if (crop.locationDetails && crop.locationDetails.village) {
+            const loc = crop.locationDetails;
+            return `${loc.village}, ${loc.tehsil || ''}, ${loc.district}, ${loc.state} - ${loc.pincode || ''}`;
+        }
+        return crop.location || "Not specified";
+    };
+
+    // Helper to get harvest date
+    const getHarvestDate = () => {
+        const date = crop.expectedHarvestDate || crop.harvestDate;
+        return date ? new Date(date).toLocaleDateString() : "Not set";
+    };
+
+    // Helper to get price
+    const getPrice = () => {
+        return crop.expectedPricePerUnit || crop.pricePerUnit || 0;
     };
 
     if (loading) {
@@ -136,6 +160,12 @@ const CropDetails = () => {
                                             <div>
                                                 <h3 className="text-success mb-2">{crop.cropName}</h3>
                                                 <p className="text-muted mb-2">{crop.category}</p>
+                                                {crop.variety && (
+                                                    <p className="mb-2">
+                                                        <Tag size={16} className="me-2 text-info" />
+                                                        <strong>Variety:</strong> {crop.variety}
+                                                    </p>
+                                                )}
                                                 <div>
                                                     {getQualityBadge(crop.quality)}
                                                     <span className="ms-2">{getStatusBadge(crop.status)}</span>
@@ -143,15 +173,16 @@ const CropDetails = () => {
                                             </div>
                                             <div className="text-end">
                                                 <h4 className="text-success mb-0">
-                                                    ₹{crop.pricePerUnit}
+                                                    ₹{getPrice()}
                                                     <small className="text-muted">/{crop.unit}</small>
                                                 </h4>
+                                                <small className="text-muted">Expected Price</small>
                                             </div>
                                         </div>
 
                                         {/* Quantity Information */}
                                         <div className="row mb-4">
-                                            <div className="col-md-6">
+                                            <div className="col-md-4">
                                                 <div className="p-3 bg-light rounded">
                                                     <small className="text-muted d-block mb-1">
                                                         Total Quantity
@@ -161,7 +192,7 @@ const CropDetails = () => {
                                                     </h5>
                                                 </div>
                                             </div>
-                                            <div className="col-md-6">
+                                            <div className="col-md-4">
                                                 <div className="p-3 bg-light rounded">
                                                     <small className="text-muted d-block mb-1">
                                                         Available Now
@@ -176,6 +207,18 @@ const CropDetails = () => {
                                                     </h5>
                                                 </div>
                                             </div>
+                                            {crop.landUnderCultivation && (
+                                                <div className="col-md-4">
+                                                    <div className="p-3 bg-light rounded">
+                                                        <small className="text-muted d-block mb-1">
+                                                            Land Area
+                                                        </small>
+                                                        <h5 className="mb-0">
+                                                            {crop.landUnderCultivation} acres
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Description */}
@@ -193,27 +236,35 @@ const CropDetails = () => {
                                                 <div className="col-md-6">
                                                     <p className="mb-2">
                                                         <Calendar size={18} className="me-2 text-muted" />
-                                                        <strong>Harvest Date:</strong>{" "}
-                                                        {new Date(crop.harvestDate).toLocaleDateString()}
+                                                        <strong>Expected Harvest:</strong>{" "}
+                                                        {getHarvestDate()}
                                                     </p>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <p className="mb-2">
-                                                        <Calendar size={18} className="me-2 text-muted" />
-                                                        <strong>Available From:</strong>{" "}
-                                                        {new Date(crop.availabilityDate).toLocaleDateString()}
-                                                    </p>
-                                                </div>
+                                                {crop.cultivationDate && (
+                                                    <div className="col-md-6">
+                                                        <p className="mb-2">
+                                                            <Calendar size={18} className="me-2 text-muted" />
+                                                            <strong>Cultivation Date:</strong>{" "}
+                                                            {new Date(crop.cultivationDate).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
                                         {/* Location */}
                                         <div className="mb-4">
-                                            <h6 className="text-secondary mb-2">Location</h6>
+                                            <h6 className="text-secondary mb-2">Farm Location</h6>
                                             <p className="mb-0">
                                                 <GeoAlt size={18} className="me-2 text-muted" />
-                                                {crop.location}
+                                                {formatLocation()}
                                             </p>
+                                            {crop.locationDetails && crop.locationDetails.pincode && (
+                                                <p className="mb-0 mt-1">
+                                                    <Map size={18} className="me-2 text-muted" />
+                                                    <small className="text-muted">Pincode: {crop.locationDetails.pincode}</small>
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -233,18 +284,13 @@ const CropDetails = () => {
                                                     <Person size={18} className="me-2 text-success" />
                                                     <strong>{crop.farmerId.name}</strong>
                                                 </p>
-                                                {crop.farmerId.phone && (
-                                                    <p className="mb-2">
-                                                        <Telephone size={18} className="me-2 text-success" />
-                                                        {crop.farmerId.phone}
-                                                    </p>
-                                                )}
-                                                {crop.farmerId.location && (
-                                                    <p className="mb-0">
-                                                        <GeoAlt size={18} className="me-2 text-success" />
-                                                        {crop.farmerId.location}
-                                                    </p>
-                                                )}
+                                                {/* Contact is hidden until agreement */}
+                                                <p className="mb-2">
+                                                    <Telephone size={18} className="me-2 text-warning" />
+                                                    <span className="badge bg-warning text-dark">
+                                                        🔒 Contact visible after agreement
+                                                    </span>
+                                                </p>
                                             </>
                                         ) : (
                                             <p className="text-muted mb-0">
@@ -301,3 +347,4 @@ const CropDetails = () => {
 };
 
 export default CropDetails;
+

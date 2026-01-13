@@ -6,7 +6,16 @@ import User from "../models/userModel.js";
 export const farmerSignAgreement = async (req, res) => {
     try {
         const { orderId } = req.params;
-        const { qualityCommitment, qualityGrade, qualityDescription, certifications } = req.body;
+        const {
+            qualityCommitment,
+            qualityGrade,
+            qualityDescription,
+            certifications,
+            digitalSignature, // <-- ADD THIS
+            platformDisclaimerAccepted,
+            harvestDateFinalized,
+            paymentOption
+        } = req.body;
         const farmerId = req.user._id;
 
         // Find the order
@@ -57,6 +66,7 @@ export const farmerSignAgreement = async (req, res) => {
                     signed: true,
                     signedAt: new Date(),
                     qualityCommitment: qualityCommitment || "I commit to supply the produce as per the agreed quality and quantity.",
+                    digitalSignature: digitalSignature, // <-- ADD THIS
                     termsAccepted: true,
                 },
                 qualityDetails: {
@@ -77,6 +87,7 @@ export const farmerSignAgreement = async (req, res) => {
                 signed: true,
                 signedAt: new Date(),
                 qualityCommitment: qualityCommitment || agreement.farmerAgreement.qualityCommitment,
+                digitalSignature: digitalSignature, // <-- ADD THIS
                 termsAccepted: true,
             };
             agreement.qualityDetails = {
@@ -127,6 +138,7 @@ export const farmerSignAgreement = async (req, res) => {
 export const traderSignAgreement = async (req, res) => {
     try {
         const { orderId } = req.params;
+        const { digitalSignature, platformDisclaimerAccepted } = req.body; // <-- ADD digitalSignature
         const traderId = req.user._id;
 
         // Find the order
@@ -183,6 +195,7 @@ export const traderSignAgreement = async (req, res) => {
         agreement.traderAgreement = {
             signed: true,
             signedAt: new Date(),
+            digitalSignature: digitalSignature, // <-- ADD THIS
             paymentTermsAccepted: true,
         };
         agreement.status = "completed";

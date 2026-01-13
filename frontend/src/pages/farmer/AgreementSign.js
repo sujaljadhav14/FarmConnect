@@ -17,6 +17,10 @@ const AgreementSign = () => {
     const [order, setOrder] = useState(null);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [digitalSignature, setDigitalSignature] = useState("");
+    const [platformDisclaimerAccepted, setPlatformDisclaimerAccepted] = useState(false);
+    const [harvestDate, setHarvestDate] = useState("");
+    const [paymentOption, setPaymentOption] = useState("dispatch"); // "dispatch" (100%) or "advance" (30/70)
+    const [agreementSigned, setAgreementSigned] = useState(false); // New state to track success
 
     // Fixed commitment statement (not editable)
     const qualityCommitment = `I, the undersigned farmer, commit to supply ${order?.cropId?.cropName || "the produce"} of ${order?.cropId?.quality || "Standard"} grade as per the agreed quality and quantity (${order?.quantity || 0} ${order?.cropId?.unit || "kg"}) mentioned in this order.`;
@@ -58,6 +62,16 @@ const AgreementSign = () => {
             return;
         }
 
+        if (!platformDisclaimerAccepted) {
+            toast.error("Please accept the platform disclaimer");
+            return;
+        }
+
+        if (!harvestDate) {
+            toast.error("Please select expected harvest/ready date");
+            return;
+        }
+
         if (!digitalSignature.trim()) {
             toast.error("Please enter your name as digital signature");
             return;
@@ -72,6 +86,9 @@ const AgreementSign = () => {
                     qualityGrade: order?.cropId?.quality || "A",
                     qualityDescription: order?.cropId?.description || `Quality grade: ${order?.cropId?.quality || "Standard"}`,
                     digitalSignature,
+                    platformDisclaimerAccepted,
+                    harvestDateFinalized: harvestDate,
+                    paymentOption, // "dispatch" for 100% at dispatch, "advance" for 30/70 split
                 },
                 {
                     headers: {
@@ -81,7 +98,7 @@ const AgreementSign = () => {
             );
 
             if (data.success) {
-                toast.success("Agreement signed successfully!");
+                toast.success("Agreement signed successfully! PDF downloaded.");
                 // Generate and download the preliminary agreement PDF
                 generateSignedAgreement(order, {
                     farmerSigned: true,
@@ -89,7 +106,9 @@ const AgreementSign = () => {
                     farmerSignedAt: new Date(),
                     traderSigned: false,
                 }, { farmerAgreement: { qualityCommitment } });
-                navigate("/farmer/my-orders");
+
+                // Set success state instead of navigating
+                setAgreementSigned(true);
             } else {
                 toast.error(data.message);
             }
@@ -125,6 +144,63 @@ const AgreementSign = () => {
 
     const advanceAmount = Math.round(order?.totalPrice * 0.30);
     const finalAmount = order?.totalPrice - advanceAmount;
+
+    // If agreement signed successfully, show success modal
+    if (agreementSigned) {
+        return (
+            <Layout title="Agreement Signed">
+                <div className="container-fluid mt-4">
+                    <div className="row">
+                        <div className="col-md-3 col-lg-2 mb-3">
+                            <FarmerMenu />
+                        </div>
+                        <div className="col-md-9 col-lg-10">
+                            <div className="card shadow-sm border-success">
+                                <div className="card-header bg-success text-white text-center">
+                                    <CheckCircle size={48} className="mb-2" />
+                                    <h3 className="mb-0">✅ Agreement Signed Successfully!</h3>
+                                </div>
+                                <div className="card-body text-center p-5">
+                                    <h5 className="text-success mb-3">
+                                        Your agreement for {order?.cropId?.cropName} has been signed.
+                                    </h5>
+                                    <p className="text-muted mb-4">
+                                        The preliminary agreement PDF has been downloaded to your device.
+                                        Once the trader confirms and signs, you'll receive the final agreement with both signatures.
+                                    </p>
+
+                                    <div className="alert alert-info">
+                                        <h6 className="alert-heading">📋 Next Steps:</h6>
+                                        <ul className="text-start mb-0">
+                                            <li>Trader will review and sign the agreement</li>
+                                            <li>You'll be notified when the complete agreement is ready</li>
+                                            <li>Prepare the crop as per the quality commitment</li>
+                                            <li>Ensure readiness by the selected harvest date: <strong>{new Date(harvestDate).toLocaleDateString()}</strong></li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="d-grid gap-2 col-md-6 mx-auto mt-4">
+                                        <button
+                                            className="btn btn-success btn-lg"
+                                            onClick={() => navigate("/farmer/my-orders")}
+                                        >
+                                            View My Orders
+                                        </button>
+                                        <button
+                                            className="btn btn-outline-secondary"
+                                            onClick={() => navigate("/farmer/dashboard")}
+                                        >
+                                            Go to Dashboard
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
 
     return (
         <Layout title="Sign Agreement">
@@ -285,7 +361,7 @@ const AgreementSign = () => {
                                             </div>
 
                                             {/* Accept Terms */}
-                                            <div className="form-check mb-4">
+                                            <div className="form-check mb-3">
                                                 <input
                                                     type="checkbox"
                                                     className="form-check-input"
@@ -297,6 +373,89 @@ const AgreementSign = () => {
                                                 <label className="form-check-label" htmlFor="termsAccepted">
                                                     <strong>I accept the terms and agree to fulfill this order</strong>
                                                 </label>
+                                            </div>
+
+                                            {/* Harvest Date Selection */}
+                                            <div className="mb-3">
+                                                <label className="form-label">
+                                                    📅 Expected Harvest/Ready Date <span className="text-danger">*</span>
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    className="form-control"
+                                                    value={harvestDate}
+                                                    onChange={(e) => setHarvestDate(e.target.value)}
+                                                    min={new Date().toISOString().split('T')[0]}
+                                                    required
+                                                />
+                                                <small className="text-muted">
+                                                    Select the date when the produce will be ready for dispatch.
+                                                </small>
+                                            </div>
+
+                                            {/* Payment Option Selection */}
+                                            <div className="mb-3">
+                                                <label className="form-label">💳 Preferred Payment Terms</label>
+                                                <div className="form-check">
+                                                    <input
+                                                        type="radio"
+                                                        className="form-check-input"
+                                                        id="paymentDispatch"
+                                                        name="paymentOption"
+                                                        value="dispatch"
+                                                        checked={paymentOption === "dispatch"}
+                                                        onChange={(e) => setPaymentOption(e.target.value)}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="paymentDispatch">
+                                                        <strong>100% Payment at Dispatch</strong>
+                                                        <br />
+                                                        <small className="text-muted">Full payment of ₹{order?.totalPrice} when produce is dispatched</small>
+                                                    </label>
+                                                </div>
+                                                <div className="form-check mt-2">
+                                                    <input
+                                                        type="radio"
+                                                        className="form-check-input"
+                                                        id="paymentAdvance"
+                                                        name="paymentOption"
+                                                        value="advance"
+                                                        checked={paymentOption === "advance"}
+                                                        onChange={(e) => setPaymentOption(e.target.value)}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="paymentAdvance">
+                                                        30% Advance + 70% on Delivery
+                                                        <br />
+                                                        <small className="text-muted">₹{advanceAmount} advance + ₹{finalAmount} after delivery</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Platform Disclaimer */}
+                                            <div className="alert alert-warning mb-3">
+                                                <h6 className="alert-heading">⚠️ Platform Disclaimer</h6>
+                                                <p className="small mb-2">
+                                                    Sudeshm Agro is only a trading platform that connects farmers and traders.
+                                                    The platform is <strong>not responsible</strong> for:
+                                                </p>
+                                                <ul className="small mb-2">
+                                                    <li>Quality disputes between parties</li>
+                                                    <li>Payment delays or defaults</li>
+                                                    <li>Transport damages or delays</li>
+                                                    <li>Any direct financial losses</li>
+                                                </ul>
+                                                <div className="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        id="platformDisclaimer"
+                                                        checked={platformDisclaimerAccepted}
+                                                        onChange={(e) => setPlatformDisclaimerAccepted(e.target.checked)}
+                                                        required
+                                                    />
+                                                    <label className="form-check-label" htmlFor="platformDisclaimer">
+                                                        <strong>I understand and accept the platform disclaimer</strong>
+                                                    </label>
+                                                </div>
                                             </div>
 
                                             {/* Digital Signature */}

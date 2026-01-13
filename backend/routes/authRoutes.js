@@ -1,6 +1,6 @@
 // routes/authRoutes.js
 import express from "express";
-import { registerUser, loginUser } from "../controllers/authController.js";
+import { registerUser, loginUser, getProfile, updateBankDetails } from "../controllers/authController.js";
 import { sendOtp, verifyOtp } from "../controllers/otpController.js";
 import {
   isAdmin,
@@ -26,6 +26,10 @@ router.post("/login", loginUser);
 // Phone + OTP (Twilio)
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
+
+// User Profile
+router.get("/profile", requireSignIn, getProfile);
+router.put("/update-bank-details", requireSignIn, updateBankDetails);
 
 // Farmer Dashboard
 router.get("/farmer/dashboard", requireSignIn, isFarmer, (req, res) => {

@@ -283,7 +283,7 @@ const BrowseCrops = () => {
                             <div className="row g-4">
                                 {filteredCrops.map((crop) => (
                                     <div className="col-12 col-md-6 col-lg-4" key={crop._id}>
-                                        <CropCard crop={crop} showFarmerInfo={true} />
+                                        <CropCard crop={crop} showFarmerInfo={true} showFarmerContact={false} />
                                     </div>
                                 ))}
                             </div>

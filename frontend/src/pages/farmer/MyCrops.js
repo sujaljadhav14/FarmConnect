@@ -5,12 +5,12 @@ import FarmerMenu from "../../Dashboards/FamerMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { Pencil, Trash } from "react-bootstrap-icons";
+import { Pencil, Trash, GeoAlt, Calendar, CurrencyRupee } from "react-bootstrap-icons";
 
 const MyCrops = () => {
     const navigate = useNavigate();
     const [crops, setCrops] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { auth } = useAuth();
     const [deleteLoading, setDeleteLoading] = useState(null);
 
@@ -37,8 +37,10 @@ const MyCrops = () => {
     }, [auth?.token]);
 
     useEffect(() => {
-        fetchMyCrops();
-    }, [fetchMyCrops]);
+        if (auth?.token) {
+            fetchMyCrops();
+        }
+    }, [fetchMyCrops, auth?.token]);
 
     const handleDelete = async (cropId) => {
         if (window.confirm("Are you sure you want to delete this crop?")) {
@@ -48,7 +50,7 @@ const MyCrops = () => {
                     `/api/crops/delete/${cropId}`,
                     {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            Authorization: `Bearer ${auth?.token}`, // Fixed: use auth.token
                         },
                     }
                 );
@@ -83,6 +85,26 @@ const MyCrops = () => {
                 {status}
             </span>
         );
+    };
+
+    // Helper to format location
+    const formatLocation = (crop) => {
+        if (crop.locationDetails && crop.locationDetails.village) {
+            const loc = crop.locationDetails;
+            return `${loc.village}, ${loc.tehsil || ''}, ${loc.district}`;
+        }
+        return crop.location || "Not specified";
+    };
+
+    // Helper to get harvest date
+    const getHarvestDate = (crop) => {
+        const date = crop.expectedHarvestDate || crop.harvestDate;
+        return date ? new Date(date).toLocaleDateString() : "Not set";
+    };
+
+    // Helper to get price
+    const getPrice = (crop) => {
+        return crop.expectedPricePerUnit || crop.pricePerUnit || 0;
     };
 
     if (loading) {
@@ -149,7 +171,12 @@ const MyCrops = () => {
                                                         <h5 className="card-title text-success mb-1">
                                                             {crop.cropName}
                                                         </h5>
-                                                        <small className="text-muted">{crop.category}</small>
+                                                        <div>
+                                                            <small className="text-muted">{crop.category}</small>
+                                                            {crop.variety && (
+                                                                <span className="badge bg-info ms-2">{crop.variety}</span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     {getStatusBadge(crop.status)}
                                                 </div>
@@ -158,19 +185,26 @@ const MyCrops = () => {
                                                 <div className="mb-3">
                                                     <p className="mb-2">
                                                         <strong>Quantity:</strong> {crop.quantity} {crop.unit}
+                                                        {crop.landUnderCultivation && (
+                                                            <small className="text-muted ms-2">
+                                                                ({crop.landUnderCultivation} acres)
+                                                            </small>
+                                                        )}
                                                     </p>
                                                     <p className="mb-2">
-                                                        <strong>Price:</strong> ₹{crop.pricePerUnit}/{crop.unit}
+                                                        <CurrencyRupee size={14} className="me-1" />
+                                                        <strong>Expected Price:</strong> ₹{getPrice(crop)}/{crop.unit}
                                                     </p>
                                                     <p className="mb-2">
                                                         <strong>Quality:</strong> {crop.quality}
                                                     </p>
                                                     <p className="mb-2">
-                                                        <strong>Location:</strong> {crop.location}
+                                                        <GeoAlt size={14} className="me-1" />
+                                                        <strong>Location:</strong> {formatLocation(crop)}
                                                     </p>
                                                     <p className="mb-2">
-                                                        <strong>Harvest Date:</strong>{" "}
-                                                        {new Date(crop.harvestDate).toLocaleDateString()}
+                                                        <Calendar size={14} className="me-1" />
+                                                        <strong>Expected Harvest:</strong> {getHarvestDate(crop)}
                                                     </p>
                                                     {crop.reservedQuantity > 0 && (
                                                         <p className="mb-0 text-warning">
@@ -242,3 +276,4 @@ const MyCrops = () => {
 };
 
 export default MyCrops;
+

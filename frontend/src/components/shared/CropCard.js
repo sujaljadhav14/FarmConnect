@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, GeoAlt, Calendar } from "react-bootstrap-icons";
+import { Eye, GeoAlt, Calendar, Tag } from "react-bootstrap-icons";
 
-const CropCard = ({ crop, showFarmerInfo = false }) => {
+const CropCard = ({ crop, showFarmerInfo = false, showFarmerContact = true }) => {
     const navigate = useNavigate();
 
     const getStatusBadge = (status) => {
@@ -35,6 +35,26 @@ const CropCard = ({ crop, showFarmerInfo = false }) => {
         );
     };
 
+    // Helper to format location
+    const formatLocation = () => {
+        if (crop.locationDetails && crop.locationDetails.village) {
+            const loc = crop.locationDetails;
+            return `${loc.village}, ${loc.tehsil || ''}, ${loc.district}`;
+        }
+        return crop.location || "Not specified";
+    };
+
+    // Helper to get harvest date
+    const getHarvestDate = () => {
+        const date = crop.expectedHarvestDate || crop.harvestDate;
+        return date ? new Date(date).toLocaleDateString() : "Not set";
+    };
+
+    // Helper to get price
+    const getPrice = () => {
+        return crop.expectedPricePerUnit || crop.pricePerUnit || 0;
+    };
+
     return (
         <div className="card h-100 shadow-sm crop-card">
             <div className="card-body">
@@ -42,8 +62,16 @@ const CropCard = ({ crop, showFarmerInfo = false }) => {
                 <div className="d-flex justify-content-between align-items-start mb-3">
                     <div>
                         <h5 className="card-title text-success mb-1">{crop.cropName}</h5>
-                        <small className="text-muted">{crop.category}</small>
-                        {getQualityBadge(crop.quality)}
+                        <div>
+                            <small className="text-muted">{crop.category}</small>
+                            {getQualityBadge(crop.quality)}
+                        </div>
+                        {crop.variety && (
+                            <div className="mt-1">
+                                <Tag size={12} className="text-info me-1" />
+                                <small className="text-info">{crop.variety}</small>
+                            </div>
+                        )}
                     </div>
                     {getStatusBadge(crop.status)}
                 </div>
@@ -54,12 +82,15 @@ const CropCard = ({ crop, showFarmerInfo = false }) => {
                         <span className="text-muted">Quantity:</span>
                         <strong>
                             {crop.quantity} {crop.unit}
+                            {crop.landUnderCultivation && (
+                                <small className="text-muted ms-1">({crop.landUnderCultivation} acres)</small>
+                            )}
                         </strong>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                        <span className="text-muted">Price:</span>
+                        <span className="text-muted">Expected Price:</span>
                         <strong className="text-success">
-                            ₹{crop.pricePerUnit}/{crop.unit}
+                            ₹{getPrice()}/{crop.unit}
                         </strong>
                     </div>
                     {crop.reservedQuantity > 0 && (
@@ -76,12 +107,12 @@ const CropCard = ({ crop, showFarmerInfo = false }) => {
                 <div className="mb-3">
                     <p className="mb-2 small">
                         <GeoAlt size={14} className="me-1 text-muted" />
-                        <span className="text-muted">{crop.location}</span>
+                        <span className="text-muted">{formatLocation()}</span>
                     </p>
                     <p className="mb-0 small">
                         <Calendar size={14} className="me-1 text-muted" />
                         <span className="text-muted">
-                            Harvested: {new Date(crop.harvestDate).toLocaleDateString()}
+                            Expected Harvest: {getHarvestDate()}
                         </span>
                     </p>
                 </div>
@@ -92,9 +123,14 @@ const CropCard = ({ crop, showFarmerInfo = false }) => {
                         <p className="mb-1">
                             <strong>Farmer:</strong> {crop.farmerId.name}
                         </p>
-                        {crop.farmerId.phone && (
+                        {/* Only show contact if showFarmerContact is true */}
+                        {showFarmerContact && crop.farmerId.phone ? (
                             <p className="mb-0 text-muted">📞 {crop.farmerId.phone}</p>
-                        )}
+                        ) : !showFarmerContact ? (
+                            <p className="mb-0">
+                                <span className="badge bg-warning text-dark">🔒 Contact visible after agreement</span>
+                            </p>
+                        ) : null}
                     </div>
                 )}
 
@@ -129,3 +165,4 @@ const CropCard = ({ crop, showFarmerInfo = false }) => {
 };
 
 export default CropCard;
+

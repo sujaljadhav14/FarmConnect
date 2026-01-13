@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
-import FarmerMenu from "../../Dashboards/FamerMenu";
+import TraderMenu from "../../Dashboards/TraderMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
 import { ArrowLeft, Person, GeoAlt, Calendar, Telephone, FileEarmarkPdf } from "react-bootstrap-icons";
 import { generateSignedAgreement } from "../../utils/generateSignedAgreement";
 
-const OrderDetails = () => {
+const TraderOrderDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { auth } = useAuth();
@@ -32,7 +32,7 @@ const OrderDetails = () => {
         } catch (error) {
             console.error("Error fetching order:", error);
             toast.error("Failed to load order details");
-            navigate("/farmer/orders");
+            navigate("/trader/my-orders");
         } finally {
             setLoading(false);
         }
@@ -51,10 +51,10 @@ const OrderDetails = () => {
             if (data.success) {
                 generateSignedAgreement(order, {
                     farmerSigned: true,
-                    farmerName: data.agreement?.farmerAgreement?.digitalSignature || auth?.user?.name,
+                    farmerName: data.agreement?.farmerAgreement?.digitalSignature || order?.farmerId?.name,
                     farmerSignedAt: data.agreement?.farmerAgreement?.signedAt,
                     traderSigned: true,
-                    traderName: data.agreement?.traderAgreement?.digitalSignature || order?.traderId?.name,
+                    traderName: data.agreement?.traderAgreement?.digitalSignature || auth?.user?.name,
                     traderSignedAt: data.agreement?.traderAgreement?.signedAt,
                 }, data.agreement);
                 toast.success("Agreement downloaded!");
@@ -67,6 +67,8 @@ const OrderDetails = () => {
     const getStatusBadge = (status) => {
         const statusConfig = {
             Pending: { color: "warning", text: "⏳ Pending" },
+            "Farmer Agreed": { color: "info", text: "✍️ Farmer Signed" },
+            "Both Agreed": { color: "primary", text: "🤝 Both Agreed" },
             Accepted: { color: "info", text: "✓ Accepted" },
             Rejected: { color: "danger", text: "✗ Rejected" },
             "Ready for Pickup": { color: "primary", text: "📦 Ready" },
@@ -86,7 +88,7 @@ const OrderDetails = () => {
                 <div className="container-fluid mt-4">
                     <div className="row">
                         <div className="col-md-3 col-lg-2 mb-3">
-                            <FarmerMenu />
+                            <TraderMenu />
                         </div>
                         <div className="col-md-9 col-lg-10">
                             <div className="text-center mt-5">
@@ -112,7 +114,7 @@ const OrderDetails = () => {
                 <div className="row">
                     {/* Sidebar */}
                     <div className="col-md-3 col-lg-2 mb-3">
-                        <FarmerMenu />
+                        <TraderMenu />
                     </div>
 
                     {/* Main Content */}
@@ -120,7 +122,7 @@ const OrderDetails = () => {
                         {/* Back Button */}
                         <button
                             className="btn btn-outline-secondary mb-3"
-                            onClick={() => navigate("/farmer/orders")}
+                            onClick={() => navigate("/trader/my-orders")}
                         >
                             <ArrowLeft size={18} className="me-2" />
                             Back to Orders
@@ -240,7 +242,7 @@ const OrderDetails = () => {
                                         {/* Notes */}
                                         {order.notes && (
                                             <div className="mb-3">
-                                                <h6 className="text-secondary mb-2">Notes from Trader</h6>
+                                                <h6 className="text-secondary mb-2">Your Notes</h6>
                                                 <p className="mb-0 fst-italic">"{order.notes}"</p>
                                             </div>
                                         )}
@@ -268,29 +270,29 @@ const OrderDetails = () => {
                                 </div>
                             </div>
 
-                            {/* Trader Information */}
+                            {/* Farmer Information */}
                             <div className="col-lg-4 mb-4">
                                 <div className="card shadow-sm mb-3">
                                     <div className="card-header bg-primary text-white">
-                                        <h6 className="mb-0">Trader Information</h6>
+                                        <h6 className="mb-0">Farmer Information</h6>
                                     </div>
                                     <div className="card-body">
-                                        {order.traderId ? (
+                                        {order.farmerId ? (
                                             <>
                                                 <p className="mb-2">
                                                     <Person size={18} className="me-2 text-primary" />
-                                                    <strong>{order.traderId.name}</strong>
+                                                    <strong>{order.farmerId.name}</strong>
                                                 </p>
-                                                {order.traderId.phone && (
+                                                {order.farmerId.phone && (
                                                     <p className="mb-2">
                                                         <Telephone size={18} className="me-2 text-primary" />
-                                                        {order.traderId.phone}
+                                                        {order.farmerId.phone}
                                                     </p>
                                                 )}
-                                                {order.traderId.location && (
+                                                {order.farmerId.location && (
                                                     <p className="mb-0">
                                                         <GeoAlt size={18} className="me-2 text-primary" />
-                                                        {order.traderId.location}
+                                                        {order.farmerId.location}
                                                     </p>
                                                 )}
                                             </>
@@ -329,4 +331,4 @@ const OrderDetails = () => {
     );
 };
 
-export default OrderDetails;
+export default TraderOrderDetails;

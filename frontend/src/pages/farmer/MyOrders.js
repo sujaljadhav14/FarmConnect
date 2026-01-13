@@ -5,8 +5,8 @@ import FarmerMenu from "../../Dashboards/FamerMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { Eye, CheckCircle, XCircle, BoxSeam } from "react-bootstrap-icons";
-import { generateOrderAgreement } from "../../utils/generateOrderAgreement";
+import { Eye, CheckCircle, XCircle, BoxSeam, FileEarmarkPdf } from "react-bootstrap-icons";
+import { generateSignedAgreement } from "../../utils/generateSignedAgreement";
 
 
 const FarmerMyOrders = () => {
@@ -298,11 +298,40 @@ const FarmerMyOrders = () => {
                                                                     </div>
                                                                 )}
 
-                                                                {/* Both Agreed: Waiting for Advance Payment */}
+                                                                {/* Both Agreed: Download Agreement + Waiting for Payment */}
                                                                 {order.orderStatus === "Both Agreed" && (
-                                                                    <div className="alert alert-warning py-2 mb-0 small">
-                                                                        💰 Waiting for trader's 30% advance payment
-                                                                    </div>
+                                                                    <>
+                                                                        <button
+                                                                            className="btn btn-sm btn-success"
+                                                                            onClick={async () => {
+                                                                                try {
+                                                                                    const { data } = await axios.get(
+                                                                                        `/api/agreements/${order._id}`,
+                                                                                        { headers: { Authorization: `Bearer ${auth?.token}` } }
+                                                                                    );
+                                                                                    if (data.success) {
+                                                                                        generateSignedAgreement(order, {
+                                                                                            farmerSigned: true,
+                                                                                            farmerName: data.agreement?.farmerAgreement?.digitalSignature || auth?.user?.name,
+                                                                                            farmerSignedAt: data.agreement?.farmerAgreement?.signedAt,
+                                                                                            traderSigned: true,
+                                                                                            traderName: data.agreement?.traderAgreement?.digitalSignature || order?.traderId?.name,
+                                                                                            traderSignedAt: data.agreement?.traderAgreement?.signedAt,
+                                                                                        }, data.agreement);
+                                                                                        toast.success("Agreement downloaded!");
+                                                                                    }
+                                                                                } catch (err) {
+                                                                                    toast.error("Failed to download agreement");
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            <FileEarmarkPdf size={14} className="me-1" />
+                                                                            Download Agreement
+                                                                        </button>
+                                                                        <div className="alert alert-warning py-2 mb-0 small">
+                                                                            💰 Waiting for trader's 30% advance payment
+                                                                        </div>
+                                                                    </>
                                                                 )}
 
                                                                 {/* Advance Paid or Accepted: Mark Ready */}
@@ -336,9 +365,30 @@ const FarmerMyOrders = () => {
                                                                 {["Accepted", "Ready for Pickup", "Delivered", "Completed"].includes(order.orderStatus) && (
                                                                     <button
                                                                         className="btn btn-sm btn-outline-success"
-                                                                        onClick={() => generateOrderAgreement(order)}
+                                                                        onClick={async () => {
+                                                                            try {
+                                                                                const { data } = await axios.get(
+                                                                                    `/api/agreements/${order._id}`,
+                                                                                    { headers: { Authorization: `Bearer ${auth?.token}` } }
+                                                                                );
+                                                                                if (data.success) {
+                                                                                    generateSignedAgreement(order, {
+                                                                                        farmerSigned: true,
+                                                                                        farmerName: data.agreement?.farmerAgreement?.digitalSignature || auth?.user?.name,
+                                                                                        farmerSignedAt: data.agreement?.farmerAgreement?.signedAt,
+                                                                                        traderSigned: true,
+                                                                                        traderName: data.agreement?.traderAgreement?.digitalSignature || order?.traderId?.name,
+                                                                                        traderSignedAt: data.agreement?.traderAgreement?.signedAt,
+                                                                                    }, data.agreement);
+                                                                                    toast.success("Agreement downloaded!");
+                                                                                }
+                                                                            } catch (err) {
+                                                                                toast.error("Failed to download agreement");
+                                                                            }
+                                                                        }}
                                                                     >
-                                                                        📄 Download Agreement
+                                                                        <FileEarmarkPdf size={14} className="me-1" />
+                                                                        Download Agreement
                                                                     </button>
                                                                 )}
 
