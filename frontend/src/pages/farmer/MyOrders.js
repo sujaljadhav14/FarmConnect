@@ -54,7 +54,7 @@ const FarmerMyOrders = () => {
                     { rejectionReason: reason },
                     {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            Authorization: `Bearer ${auth?.token}`,
                         },
                     }
                 );
@@ -162,6 +162,14 @@ const FarmerMyOrders = () => {
         );
     }
 
+    // Separate active orders from order history
+    const activeOrders = orders.filter(order =>
+        ["Pending", "Farmer Agreed", "Both Agreed", "Advance Paid", "Accepted", "Ready for Pickup", "In Transit"].includes(order.orderStatus)
+    );
+    const orderHistory = orders.filter(order =>
+        !["Pending", "Farmer Agreed", "Both Agreed", "Advance Paid", "Accepted", "Ready for Pickup", "In Transit"].includes(order.orderStatus)
+    );
+
     return (
         <Layout title="My Orders">
             <div className="container-fluid mt-4">
@@ -173,243 +181,304 @@ const FarmerMyOrders = () => {
 
                     {/* Main Content */}
                     <div className="col-md-9 col-lg-10">
+                        {/* Active Orders Section */}
                         <h3 className="text-success mb-4">📦 Orders Received</h3>
 
-                        {orders.length === 0 ? (
+                        {activeOrders.length === 0 && orderHistory.length === 0 ? (
                             <div className="card shadow-sm">
                                 <div className="card-body text-center py-5">
-                                    <h5 className="text-muted">No orders received yet</h5>
+                                    <h5 className="text-muted">No orders</h5>
                                     <p className="text-muted">
                                         Orders from traders will appear here
                                     </p>
                                 </div>
                             </div>
                         ) : (
-                            <div className="row g-4">
-                                {orders.map((order) => (
-                                    <div className="col-12" key={order._id}>
-                                        <div className="card shadow-sm order-card">
-                                            <div className="card-body">
-                                                <div className="row">
-                                                    {/* Order Details */}
-                                                    <div className="col-md-8">
-                                                        <div className="d-flex justify-content-between align-items-start mb-3">
-                                                            <div>
-                                                                <h5 className="text-success mb-1">
-                                                                    {order.cropId?.cropName || "N/A"}
-                                                                </h5>
-                                                                <small className="text-muted">
-                                                                    Order ID: {order._id.slice(-8)}
-                                                                </small>
-                                                            </div>
-                                                            <div className="text-end">
-                                                                {getStatusBadge(order.orderStatus)}
-                                                            </div>
-                                                        </div>
-
+                            <>
+                                {/* Active Orders */}
+                                {activeOrders.length > 0 && (
+                                    <div className="row g-4 mb-5">
+                                        {activeOrders.map((order) => (
+                                            <div className="col-12" key={order._id}>
+                                                <div className="card shadow-sm order-card">
+                                                    <div className="card-body">
                                                         <div className="row">
-                                                            <div className="col-md-6 mb-2">
-                                                                <small className="text-muted">Trader:</small>
-                                                                <p className="mb-0">
-                                                                    <strong>{order.traderId?.name || "N/A"}</strong>
-                                                                </p>
-                                                                {order.traderId?.phone && (
-                                                                    <small className="text-muted">
-                                                                        📞 {order.traderId.phone}
-                                                                    </small>
-                                                                )}
-                                                            </div>
-                                                            <div className="col-md-6 mb-2">
-                                                                <small className="text-muted">Quantity:</small>
-                                                                <p className="mb-0">
-                                                                    <strong>
-                                                                        {order.quantity} {order.cropId?.unit || "unit"}
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                            <div className="col-md-6 mb-2">
-                                                                <small className="text-muted">Total Price:</small>
-                                                                <p className="mb-0">
-                                                                    <strong className="text-success">
-                                                                        ₹{order.totalPrice}
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                            <div className="col-md-6 mb-2">
-                                                                <small className="text-muted">Payment:</small>
-                                                                <p className="mb-0">
-                                                                    {order.paymentMethod} -{" "}
-                                                                    {getPaymentStatusBadge(order.paymentStatus)}
-                                                                </p>
-                                                            </div>
-                                                            <div className="col-md-12 mb-2">
-                                                                <small className="text-muted">
-                                                                    Delivery Address:
-                                                                </small>
-                                                                <p className="mb-0">{order.deliveryAddress}</p>
-                                                            </div>
-                                                            {order.notes && (
-                                                                <div className="col-md-12 mb-2">
-                                                                    <small className="text-muted">Notes:</small>
-                                                                    <p className="mb-0 fst-italic">
-                                                                        "{order.notes}"
-                                                                    </p>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Actions */}
-                                                    <div className="col-md-4">
-                                                        <div className="text-md-end">
-                                                            <small className="text-muted d-block mb-3">
-                                                                Ordered on{" "}
-                                                                {new Date(order.orderDate).toLocaleDateString()}
-                                                            </small>
-
-                                                            <div className="d-flex flex-column gap-2">
-
-                                                                {/* Pending: Sign Agreement / Reject */}
-                                                                {order.orderStatus === "Pending" && (
-                                                                    <>
-                                                                        <button
-                                                                            className="btn btn-sm btn-success"
-                                                                            onClick={() => navigate(`/farmer/agreement/${order._id}`)}
-                                                                        >
-                                                                            <CheckCircle size={14} className="me-1" />
-                                                                            Sign Agreement
-                                                                        </button>
-
-                                                                        <button
-                                                                            className="btn btn-sm btn-outline-danger"
-                                                                            onClick={() => handleRejectOrder(order._id)}
-                                                                            disabled={actionLoading === order._id}
-                                                                        >
-                                                                            <XCircle size={14} className="me-1" />
-                                                                            Reject Order
-                                                                        </button>
-                                                                    </>
-                                                                )}
-
-                                                                {/* Farmer Agreed: Waiting for Trader */}
-                                                                {order.orderStatus === "Farmer Agreed" && (
-                                                                    <div className="alert alert-info py-2 mb-0 small">
-                                                                        ⏳ Waiting for trader to confirm agreement
+                                                            {/* Order Details */}
+                                                            <div className="col-md-8">
+                                                                <div className="d-flex justify-content-between align-items-start mb-3">
+                                                                    <div>
+                                                                        <h5 className="text-success mb-1">
+                                                                            {order.cropId?.cropName || "N/A"}
+                                                                        </h5>
+                                                                        <small className="text-muted">
+                                                                            Order ID: {order._id.slice(-8)}
+                                                                        </small>
                                                                     </div>
-                                                                )}
+                                                                    <div className="text-end">
+                                                                        {getStatusBadge(order.orderStatus)}
+                                                                    </div>
+                                                                </div>
 
-                                                                {/* Both Agreed: Download Agreement + Waiting for Payment */}
-                                                                {order.orderStatus === "Both Agreed" && (
-                                                                    <>
-                                                                        <button
-                                                                            className="btn btn-sm btn-success"
-                                                                            onClick={async () => {
-                                                                                try {
-                                                                                    const { data } = await axios.get(
-                                                                                        `/api/agreements/${order._id}`,
-                                                                                        { headers: { Authorization: `Bearer ${auth?.token}` } }
-                                                                                    );
-                                                                                    if (data.success) {
-                                                                                        generateSignedAgreement(order, {
-                                                                                            farmerSigned: true,
-                                                                                            farmerName: data.agreement?.farmerAgreement?.digitalSignature || auth?.user?.name,
-                                                                                            farmerSignedAt: data.agreement?.farmerAgreement?.signedAt,
-                                                                                            traderSigned: true,
-                                                                                            traderName: data.agreement?.traderAgreement?.digitalSignature || order?.traderId?.name,
-                                                                                            traderSignedAt: data.agreement?.traderAgreement?.signedAt,
-                                                                                        }, data.agreement);
-                                                                                        toast.success("Agreement downloaded!");
-                                                                                    }
-                                                                                } catch (err) {
-                                                                                    toast.error("Failed to download agreement");
-                                                                                }
-                                                                            }}
-                                                                        >
-                                                                            <FileEarmarkPdf size={14} className="me-1" />
-                                                                            Download Agreement
-                                                                        </button>
-                                                                        <div className="alert alert-warning py-2 mb-0 small">
-                                                                            💰 Waiting for trader's 30% advance payment
+                                                                <div className="row">
+                                                                    <div className="col-md-6 mb-2">
+                                                                        <small className="text-muted">Trader:</small>
+                                                                        <p className="mb-0">
+                                                                            <strong>{order.traderId?.name || "N/A"}</strong>
+                                                                        </p>
+                                                                        {order.traderId?.phone && (
+                                                                            <small className="text-muted">
+                                                                                📞 {order.traderId.phone}
+                                                                            </small>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="col-md-6 mb-2">
+                                                                        <small className="text-muted">Quantity:</small>
+                                                                        <p className="mb-0">
+                                                                            <strong>
+                                                                                {order.quantity} {order.cropId?.unit || "unit"}
+                                                                            </strong>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="col-md-6 mb-2">
+                                                                        <small className="text-muted">Total Price:</small>
+                                                                        <p className="mb-0">
+                                                                            <strong className="text-success">
+                                                                                ₹{order.totalPrice}
+                                                                            </strong>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="col-md-6 mb-2">
+                                                                        <small className="text-muted">Payment:</small>
+                                                                        <p className="mb-0">
+                                                                            {order.paymentMethod} -{" "}
+                                                                            {getPaymentStatusBadge(order.paymentStatus)}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="col-md-12 mb-2">
+                                                                        <small className="text-muted">
+                                                                            Delivery Address:
+                                                                        </small>
+                                                                        <p className="mb-0">{order.deliveryAddress}</p>
+                                                                    </div>
+                                                                    {order.notes && (
+                                                                        <div className="col-md-12 mb-2">
+                                                                            <small className="text-muted">Notes:</small>
+                                                                            <p className="mb-0 fst-italic">
+                                                                                "{order.notes}"
+                                                                            </p>
                                                                         </div>
-                                                                    </>
-                                                                )}
+                                                                    )}
+                                                                </div>
+                                                            </div>
 
-                                                                {/* Advance Paid or Accepted: Mark Ready */}
-                                                                {(order.orderStatus === "Advance Paid" || order.orderStatus === "Accepted") && (
-                                                                    <button
-                                                                        className="btn btn-sm btn-primary"
-                                                                        onClick={() => handleMarkReady(order._id)}
-                                                                        disabled={actionLoading === order._id}
-                                                                    >
-                                                                        {actionLoading === order._id ? (
-                                                                            <span className="spinner-border spinner-border-sm" />
-                                                                        ) : (
+                                                            {/* Actions */}
+                                                            <div className="col-md-4">
+                                                                <div className="text-md-end">
+                                                                    <small className="text-muted d-block mb-3">
+                                                                        Ordered on{" "}
+                                                                        {new Date(order.orderDate).toLocaleDateString()}
+                                                                    </small>
+
+                                                                    <div className="d-flex flex-column gap-2">
+
+                                                                        {/* Pending: Sign Agreement / Reject */}
+                                                                        {order.orderStatus === "Pending" && (
                                                                             <>
-                                                                                <BoxSeam size={14} className="me-1" />
-                                                                                Mark Ready
+                                                                                <button
+                                                                                    className="btn btn-sm btn-success"
+                                                                                    onClick={() => navigate(`/farmer/agreement/${order._id}`)}
+                                                                                >
+                                                                                    <CheckCircle size={14} className="me-1" />
+                                                                                    Sign Agreement
+                                                                                </button>
+
+                                                                                <button
+                                                                                    className="btn btn-sm btn-outline-danger"
+                                                                                    onClick={() => handleRejectOrder(order._id)}
+                                                                                    disabled={actionLoading === order._id}
+                                                                                >
+                                                                                    <XCircle size={14} className="me-1" />
+                                                                                    Reject Order
+                                                                                </button>
                                                                             </>
                                                                         )}
-                                                                    </button>
-                                                                )}
 
-                                                                {/* View Details */}
-                                                                <button
-                                                                    className="btn btn-sm btn-outline-primary"
-                                                                    onClick={() => navigate(`/farmer/order/${order._id}`)}
-                                                                >
-                                                                    <Eye size={14} className="me-1" />
-                                                                    View Details
-                                                                </button>
+                                                                        {/* Farmer Agreed: Waiting for Trader */}
+                                                                        {order.orderStatus === "Farmer Agreed" && (
+                                                                            <div className="alert alert-info py-2 mb-0 small">
+                                                                                ⏳ Waiting for trader to confirm agreement
+                                                                            </div>
+                                                                        )}
 
-                                                                {/* ✅ DOWNLOAD AGREEMENT BUTTON */}
-                                                                {["Accepted", "Ready for Pickup", "Delivered", "Completed"].includes(order.orderStatus) && (
-                                                                    <button
-                                                                        className="btn btn-sm btn-outline-success"
-                                                                        onClick={async () => {
-                                                                            try {
-                                                                                const { data } = await axios.get(
-                                                                                    `/api/agreements/${order._id}`,
-                                                                                    { headers: { Authorization: `Bearer ${auth?.token}` } }
-                                                                                );
-                                                                                if (data.success) {
-                                                                                    generateSignedAgreement(order, {
-                                                                                        farmerSigned: true,
-                                                                                        farmerName: data.agreement?.farmerAgreement?.digitalSignature || auth?.user?.name,
-                                                                                        farmerSignedAt: data.agreement?.farmerAgreement?.signedAt,
-                                                                                        traderSigned: true,
-                                                                                        traderName: data.agreement?.traderAgreement?.digitalSignature || order?.traderId?.name,
-                                                                                        traderSignedAt: data.agreement?.traderAgreement?.signedAt,
-                                                                                    }, data.agreement);
-                                                                                    toast.success("Agreement downloaded!");
-                                                                                }
-                                                                            } catch (err) {
-                                                                                toast.error("Failed to download agreement");
-                                                                            }
-                                                                        }}
-                                                                    >
-                                                                        <FileEarmarkPdf size={14} className="me-1" />
-                                                                        Download Agreement
-                                                                    </button>
-                                                                )}
+                                                                        {/* Both Agreed: Waiting for Advance Payment */}
+                                                                        {order.orderStatus === "Both Agreed" && (
+                                                                            <div className="alert alert-warning py-2 mb-0 small">
+                                                                                💰 Waiting for trader's 30% advance payment
+                                                                            </div>
+                                                                        )}
 
+                                                                        {/* Advance Paid or Accepted: Mark Ready */}
+                                                                        {(order.orderStatus === "Advance Paid" || order.orderStatus === "Accepted") && (
+                                                                            <button
+                                                                                className="btn btn-sm btn-primary"
+                                                                                onClick={() => handleMarkReady(order._id)}
+                                                                                disabled={actionLoading === order._id}
+                                                                            >
+                                                                                {actionLoading === order._id ? (
+                                                                                    <span className="spinner-border spinner-border-sm" />
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <BoxSeam size={14} className="me-1" />
+                                                                                        Mark Ready
+                                                                                    </>
+                                                                                )}
+                                                                            </button>
+                                                                        )}
+
+                                                                        {/* View Details */}
+                                                                        <button
+                                                                            className="btn btn-sm btn-outline-primary"
+                                                                            onClick={() => navigate(`/farmer/order/${order._id}`)}
+                                                                        >
+                                                                            <Eye size={14} className="me-1" />
+                                                                            View Details
+                                                                        </button>
+
+                                                                        {/* ✅ DOWNLOAD AGREEMENT BUTTON */}
+                                                                        {["Accepted", "Ready for Pickup", "Delivered", "Completed"].includes(order.orderStatus) && (
+                                                                            <button
+                                                                                className="btn btn-sm btn-outline-success"
+                                                                                onClick={() => generateOrderAgreement(order)}
+                                                                            >
+                                                                                📄 Download Agreement
+                                                                            </button>
+                                                                        )}
+
+                                                                    </div>
+
+                                                                </div>
                                                             </div>
-
                                                         </div>
+                                                    </div>
+                                                    <div className="card-footer bg-light">
+                                                        <small className="text-muted">
+                                                            Expected Delivery:{" "}
+                                                            {new Date(
+                                                                order.expectedDeliveryDate
+                                                            ).toLocaleDateString()}
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="card-footer bg-light">
-                                                <small className="text-muted">
-                                                    Expected Delivery:{" "}
-                                                    {new Date(
-                                                        order.expectedDeliveryDate
-                                                    ).toLocaleDateString()}
-                                                </small>
-                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Order History Section */}
+                                {orderHistory.length > 0 && (
+                                    <div className="mt-5">
+                                        <h4 className="text-secondary mb-4">📋 Order History</h4>
+                                        <div className="row g-4">
+                                            {orderHistory.map((order) => (
+                                                <div className="col-12" key={order._id}>
+                                                    <div className="card shadow-sm order-card">
+                                                        <div className="card-body">
+                                                            <div className="row">
+                                                                {/* Order Details */}
+                                                                <div className="col-md-8">
+                                                                    <div className="d-flex justify-content-between align-items-start mb-3">
+                                                                        <div>
+                                                                            <h5 className="text-secondary mb-1">
+                                                                                {order.cropId?.cropName || "N/A"}
+                                                                            </h5>
+                                                                            <small className="text-muted">
+                                                                                Order ID: {order._id.slice(-8)}
+                                                                            </small>
+                                                                        </div>
+                                                                        <div className="text-end">
+                                                                            {getStatusBadge(order.orderStatus)}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="row">
+                                                                        <div className="col-md-6 mb-2">
+                                                                            <small className="text-muted">Trader:</small>
+                                                                            <p className="mb-0">
+                                                                                <strong>{order.traderId?.name || "N/A"}</strong>
+                                                                            </p>
+                                                                            {order.traderId?.phone && (
+                                                                                <small className="text-muted">
+                                                                                    📞 {order.traderId.phone}
+                                                                                </small>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="col-md-6 mb-2">
+                                                                            <small className="text-muted">Quantity:</small>
+                                                                            <p className="mb-0">
+                                                                                <strong>
+                                                                                    {order.quantity} {order.cropId?.unit || "unit"}
+                                                                                </strong>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div className="col-md-6 mb-2">
+                                                                            <small className="text-muted">Total Price:</small>
+                                                                            <p className="mb-0">
+                                                                                <strong className="text-success">
+                                                                                    ₹{order.totalPrice}
+                                                                                </strong>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div className="col-md-6 mb-2">
+                                                                            <small className="text-muted">Payment:</small>
+                                                                            <p className="mb-0">
+                                                                                {order.paymentMethod} -{" "}
+                                                                                {getPaymentStatusBadge(order.paymentStatus)}
+                                                                            </p>
+                                                                        </div>
+                                                                        {order.rejectionReason && (
+                                                                            <div className="col-md-12 mb-2">
+                                                                                <small className="text-muted">Rejection Reason:</small>
+                                                                                <p className="mb-0 text-danger fw-5">
+                                                                                    {order.rejectionReason}
+                                                                                </p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Actions */}
+                                                                <div className="col-md-4">
+                                                                    <div className="text-md-end">
+                                                                        <small className="text-muted d-block mb-3">
+                                                                            {order.orderStatus === "Delivered" ? "Delivered on" : "Ordered on"}{" "}
+                                                                            {new Date(order.orderDate).toLocaleDateString()}
+                                                                        </small>
+                                                                        <button
+                                                                            className="btn btn-sm btn-outline-primary w-100"
+                                                                            onClick={() => navigate(`/farmer/order/${order._id}`)}
+                                                                        >
+                                                                            <Eye size={14} className="me-1" />
+                                                                            View Details
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="card-footer bg-light">
+                                                            <small className="text-muted">
+                                                                Expected Delivery:{" "}
+                                                                {new Date(
+                                                                    order.expectedDeliveryDate
+                                                                ).toLocaleDateString()}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
