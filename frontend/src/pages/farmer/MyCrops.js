@@ -5,7 +5,7 @@ import FarmerMenu from "../../Dashboards/FamerMenu";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
-import { Pencil, Trash, GeoAlt, Calendar, CurrencyRupee } from "react-bootstrap-icons";
+import { Pencil, Trash, GeoAlt, Calendar, CurrencyRupee, ChatSquareText } from "react-bootstrap-icons";
 
 const MyCrops = () => {
     const navigate = useNavigate();
@@ -13,6 +13,7 @@ const MyCrops = () => {
     const [loading, setLoading] = useState(true);
     const { auth } = useAuth();
     const [deleteLoading, setDeleteLoading] = useState(null);
+    const [proposalCounts, setProposalCounts] = useState({});
 
     const fetchMyCrops = useCallback(async () => {
         try {
@@ -27,6 +28,8 @@ const MyCrops = () => {
 
             if (data.success) {
                 setCrops(data.crops);
+                // Fetch proposal counts for each crop
+                fetchProposalCounts(data.crops);
             }
         } catch (error) {
             console.error("Error fetching crops:", error);
@@ -41,6 +44,27 @@ const MyCrops = () => {
             fetchMyCrops();
         }
     }, [fetchMyCrops, auth?.token]);
+
+    // Fetch proposal counts for crops
+    const fetchProposalCounts = async (cropsData) => {
+        try {
+            const counts = {};
+            for (const crop of cropsData) {
+                const { data } = await axios.get(
+                    `/api/proposals/crop/${crop._id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${auth?.token}`,
+                        },
+                    }
+                );
+                counts[crop._id] = data.filter(p => p.status === "pending").length;
+            }
+            setProposalCounts(counts);
+        } catch (error) {
+            console.error("Error fetching proposal counts:", error);
+        }
+    };
 
     const handleDelete = async (cropId) => {
         if (window.confirm("Are you sure you want to delete this crop?")) {
@@ -215,7 +239,7 @@ const MyCrops = () => {
                                                 </div>
 
                                                 {/* Action Buttons */}
-                                                <div className="d-flex gap-2">
+                                                <div className="d-flex gap-2 mb-2">
                                                     <button
                                                         className="btn btn-sm btn-outline-primary flex-fill"
                                                         onClick={() => navigate(`/farmer/edit-crop/${crop._id}`)}
@@ -243,6 +267,19 @@ const MyCrops = () => {
                                                         )}
                                                     </button>
                                                 </div>
+                                                {/* View Bids Button */}
+                                                <button
+                                                    className="btn btn-sm btn-warning w-100"
+                                                    onClick={() => navigate(`/farmer/proposals/${crop._id}`)}
+                                                >
+                                                    <ChatSquareText size={14} className="me-1" />
+                                                    View Bids
+                                                    {proposalCounts[crop._id] > 0 && (
+                                                        <span className="badge bg-danger ms-2">
+                                                            {proposalCounts[crop._id]}
+                                                        </span>
+                                                    )}
+                                                </button>
                                             </div>
 
                                             {/* Card Footer */}

@@ -8,6 +8,7 @@ import {
   BarChartLine,
   Wallet,
   People,
+  ChatSquareText,
 } from "react-bootstrap-icons";
 import TraderMenu from "./TraderMenu";
 
@@ -28,18 +29,25 @@ const TraderDashboard = () => {
       color: "success",
     },
     {
+      title: "My Proposals",
+      icon: <ChatSquareText size={40} className="mb-2" />,
+      description: "View and manage your bids on crops.",
+      link: "/trader/my-proposals",
+      color: "warning",
+    },
+    {
       title: "My Orders",
       icon: <CartCheck size={40} className="mb-2" />,
       description: "Track placed orders and delivery status.",
-      link: "/trader/orders",
-      color: "warning",
+      link: "/trader/my-orders",
+      color: "info",
     },
     {
       title: "Payments",
       icon: <Wallet size={40} className="mb-2" />,
       description: "Manage advance & final payments to farmers.",
       link: "/trader/payments",
-      color: "info",
+      color: "danger",
     },
     {
       title: "Market Analytics",
