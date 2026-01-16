@@ -89,14 +89,54 @@ export const getProposalsForCrop = async (req, res) => {
 
         // Fetch ALL proposals for this crop (pending, accepted, rejected)
         const proposals = await Proposal.find({ cropId })
-            .populate("traderId", "name phone rating")
+            .populate("traderId", "name phone rating creditScore totalRatings")
             .sort({ createdAt: -1 });
+
+        // Smart sorting: Rank by credit score + price + rating
+        // 40% credit score + 35% price + 25% rating
+        if (proposals.length > 0) {
+            // Find max price for normalization
+            const maxPrice = Math.max(...proposals.map(p => p.proposedPrice));
+
+            proposals.sort((a, b) => {
+                const scoreA = calculateBidScore(a, maxPrice);
+                const scoreB = calculateBidScore(b, maxPrice);
+                return scoreB - scoreA; // Higher score first
+            });
+        }
 
         res.json(proposals);
     } catch (error) {
         console.error("Error fetching proposals:", error);
         res.status(500).json({ message: "Error fetching proposals", error: error.message });
     }
+};
+
+// Helper function to calculate bid ranking score
+function calculateBidScore(proposal, maxPrice) {
+    const trader = proposal.traderId;
+
+    // Weights
+    const creditWeight = 0.40;  // 40% weight
+    const priceWeight = 0.35;   // 35% weight
+    const ratingWeight = 0.25;  // 25% weight
+
+    // Normalize credit score (0-1000+ to 0-100 scale)
+    const creditScore = Math.min((trader.creditScore / 1000) * 100, 100);
+
+    // Normalize price (0 to maxPrice scale to 0-100)
+    const priceScore = maxPrice > 0 ? (proposal.proposedPrice / maxPrice) * 100 : 0;
+
+    // Normalize rating (0-5 to 0-100 scale)
+    const ratingScore = (trader.rating / 5) * 100;
+
+    const finalScore = (
+        creditScore * creditWeight +
+        priceScore * priceWeight +
+        ratingScore * ratingWeight
+    );
+
+    return finalScore;
 };
 
 // Get trader's proposals

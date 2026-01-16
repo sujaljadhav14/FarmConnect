@@ -26,6 +26,22 @@ const userSchema = new mongoose.Schema(
       min: 0,
       max: 5,
     },
+    // NEW: Total number of ratings received
+    totalRatings: {
+      type: Number,
+      default: 0,
+    },
+    // NEW: Credit Score for bid ranking (0 = minimum, no max)
+    creditScore: {
+      type: Number,
+      default: 100, // Starting score for new users
+      min: 0,
+    },
+    // NEW: Count of completed orders (for milestones)
+    completedOrders: {
+      type: Number,
+      default: 0,
+    },
     // NEW: Farm location for farmers (used for weather auto-fetch)
     farmLocation: {
       village: { type: String, trim: true },

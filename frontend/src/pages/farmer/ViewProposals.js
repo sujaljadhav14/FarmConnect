@@ -259,6 +259,13 @@ const ViewProposals = () => {
                                                                         <StarFill size={12} /> {proposal.traderId.rating.toFixed(1)}
                                                                     </small>
                                                                 )}
+                                                                {proposal.traderId?.creditScore !== undefined && (
+                                                                    <div>
+                                                                        <small className="text-primary fw-bold">
+                                                                            🌟 {proposal.traderId.creditScore} pts
+                                                                        </small>
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                         <small className="text-muted">

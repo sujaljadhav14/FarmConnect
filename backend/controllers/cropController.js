@@ -25,6 +25,10 @@ export const addCrop = async (req, res) => {
             });
         }
 
+        // DEBUG: Log farmerId
+        console.log("[ADD CROP] Farmer ID:", req.user?._id);
+        console.log("[ADD CROP] User object:", req.user);
+
         // Create new crop
         const crop = await Crop.create({
             farmerId: req.user._id, // From auth middleware
