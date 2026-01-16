@@ -7,8 +7,6 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/authContext";
 import { Eye, CheckCircle, XCircle, BoxSeam, FileEarmarkPdf } from "react-bootstrap-icons";
 import { generateSignedAgreement } from "../../utils/generateSignedAgreement";
-
-
 const FarmerMyOrders = () => {
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
@@ -139,7 +137,6 @@ const FarmerMyOrders = () => {
             </span>
         );
     };
-
     if (loading) {
         return (
             <Layout title="My Orders">
@@ -348,7 +345,8 @@ const FarmerMyOrders = () => {
                                                                         {["Accepted", "Ready for Pickup", "Delivered", "Completed"].includes(order.orderStatus) && (
                                                                             <button
                                                                                 className="btn btn-sm btn-outline-success"
-                                                                                onClick={() => generateOrderAgreement(order)}
+                                                                                onClick={() => generateSignedAgreement(order)}
+
                                                                             >
                                                                                 📄 Download Agreement
                                                                             </button>
