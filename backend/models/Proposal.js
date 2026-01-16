@@ -99,6 +99,13 @@ const proposalSchema = new mongoose.Schema(
             trim: true,
             maxlength: 500,
         },
+
+        // Auto-created order after acceptance
+        orderId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Order",
+            default: null,
+        },
     },
     {
         timestamps: true,
@@ -116,7 +123,7 @@ proposalSchema.virtual("isExpired").get(function () {
 });
 
 // Calculate platform fees before save (₹1 per kg)
-proposalSchema.pre("save", function (next) {
+proposalSchema.pre("save", async function () {
     if (this.isModified("quantity") || this.isNew) {
         // Convert quantity to kg for fee calculation
         let quantityInKg = this.quantity;
@@ -126,7 +133,7 @@ proposalSchema.pre("save", function (next) {
         this.platformFees = quantityInKg * 1; // ₹1 per kg
         this.bookingAmount = this.totalAmount * 0.10; // 10% booking
     }
-    next();
+    // No need to call next() in async functions
 });
 
 const Proposal = mongoose.model("Proposal", proposalSchema);

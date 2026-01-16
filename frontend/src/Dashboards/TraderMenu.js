@@ -6,6 +6,7 @@ import {
   FileEarmarkText,
   CartCheck,
   Basket3,
+  ChatSquareText,
 } from "react-bootstrap-icons";
 
 const TraderMenu = () => {
@@ -21,6 +22,11 @@ const TraderMenu = () => {
       name: "Browse Crops",
       icon: <Basket3 className="me-2" />,
       path: "/trader/crops",
+    },
+    {
+      name: "My Proposals",
+      icon: <ChatSquareText className="me-2" />,
+      path: "/trader/my-proposals",
     },
     {
       name: "My Orders",

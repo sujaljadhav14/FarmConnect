@@ -22,5 +22,6 @@ router.put("/status/:cropId", requireSignIn, isFarmer, updateCropStatus);
 // Public/Trader routes
 router.get("/available", requireSignIn, getAllAvailableCrops);
 router.get("/details/:cropId", requireSignIn, getCropDetails);
+router.get("/:cropId", requireSignIn, getCropDetails); // Alternative route
 
 export default router;

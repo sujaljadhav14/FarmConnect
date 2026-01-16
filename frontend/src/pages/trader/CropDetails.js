@@ -307,15 +307,27 @@ const CropDetails = () => {
                                             <>
                                                 <h6 className="text-success mb-3">Ready to Order?</h6>
                                                 <p className="text-muted small mb-3">
-                                                    {availableQuantity} {crop.unit} available for immediate
-                                                    purchase
+                                                    {availableQuantity} {crop.unit} available
                                                 </p>
+
+                                                {/* Place Bid Button */}
+                                                <button
+                                                    className="btn btn-warning w-100 mb-2"
+                                                    onClick={() => navigate(`/trader/make-proposal/${crop._id}`)}
+                                                >
+                                                    💰 Place Bid
+                                                </button>
+
+                                                {/* OR Divider */}
+                                                <div className="text-muted small mb-2">or</div>
+
+                                                {/* Direct Order Button */}
                                                 <button
                                                     className="btn btn-success w-100"
                                                     onClick={() => navigate(`/trader/place-order/${crop._id}`)}
                                                 >
                                                     <Cart3 size={18} className="me-2" />
-                                                    Place Order
+                                                    Direct Order
                                                 </button>
                                             </>
                                         ) : (
