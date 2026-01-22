@@ -120,7 +120,9 @@ const TraderKYC_Data = () => {
                   <h5 className="mb-3">📂 Uploaded Documents</h5>
 
                   <ul className="list-group">
-                    <DocumentItem label="Aadhaar / PAN" file={kyc.aadhaarPan} />
+                    <DocumentItem label="Aadhaar Card" file={kyc.aadhaarDocument} />
+
+                    <DocumentItem label="PAN Card" file={kyc.panDocument} />
 
                     <DocumentItem label="Selfie" file={kyc.selfie} />
 

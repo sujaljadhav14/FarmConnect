@@ -20,7 +20,8 @@ export const submitKYC = async (req, res) => {
     const data = {
       user: userId,
       role,
-      aadhaarPan: req.files?.aadhaarPan?.[0]?.filename || null,
+      aadhaarDocument: req.files?.aadhaar?.[0]?.filename || req.files?.aadhaarPan?.[0]?.filename || null,
+      panDocument: req.files?.pan?.[0]?.filename || null,
       selfie: req.files?.selfie?.[0]?.filename || null,
     };
 
@@ -34,8 +35,6 @@ export const submitKYC = async (req, res) => {
       data.gst = req.files?.gst?.[0]?.filename || null;
       data.businessReg = req.files?.businessReg?.[0]?.filename || null;
     }
-
-    if (role === "transport") {
       data.businessLicense = req.files?.businessLicense?.[0]?.filename || null;
       data.companyName = req.body?.companyName || null;
       data.gstNumber = req.body?.gstNumber || null;
@@ -47,11 +46,32 @@ export const submitKYC = async (req, res) => {
     }
 
     // Validation
-    if (!data.aadhaarPan || !data.selfie) {
-      console.log("❌ Missing basic docs:", { aadhaarPan: data.aadhaarPan, selfie: data.selfie });
+    if (!data.aadhaarDocument || !data.selfie) {
+      console.log("❌ Missing basic docs:", { aadhaarDocument: data.aadhaarDocument, selfie: data.selfie });
       return res.status(400).json({
-        error: "Aadhaar/PAN and Selfie are required",
+        error: "Aadhaar document and Selfie are required",
       });
+    }
+
+    if (role === "trader") {
+      if (!data.panDocument) {
+        console.log("❌ Missing PAN document for trader");
+        return res.status(400).json({
+          error: "PAN document is required for traders",
+        });
+      }
+      if (!data.gst) {
+        console.log("❌ Missing GST for trader");
+        return res.status(400).json({
+          error: "GST certificate is required for traders",
+        });
+      }
+      if (!data.businessReg) {
+        console.log("❌ Missing business registration for trader");
+        return res.status(400).json({
+          error: "Business registration proof is required for traders",
+        });
+      }
     }
 
     if (role === "transport") {

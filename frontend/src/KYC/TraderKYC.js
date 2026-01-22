@@ -9,11 +9,13 @@ const TraderKYC = () => {
   const { auth } = useAuth();
 
   const [aadhaarPreview, setAadhaarPreview] = useState(null);
+  const [panPreview, setPanPreview] = useState(null);
   const [selfiePreview, setSelfiePreview] = useState(null);
   const [gstPreview, setGstPreview] = useState(null);
   const [businessPreview, setBusinessPreview] = useState(null);
 
-  const [aadhaarPan, setAadhaarPan] = useState(null);
+  const [aadhaar, setAadhaar] = useState(null);
+  const [pan, setPan] = useState(null);
   const [selfie, setSelfie] = useState(null);
   const [gst, setGst] = useState(null);
   const [businessReg, setBusinessReg] = useState(null);
@@ -26,6 +28,7 @@ const TraderKYC = () => {
   const [stream, setStream] = useState(null);
 
   const aadhaarRef = useRef();
+  const panRef = useRef();
   const selfieRef = useRef();
   const gstRef = useRef();
   const businessRef = useRef();
@@ -114,12 +117,13 @@ const TraderKYC = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!aadhaarPan || !selfie || !gst || !businessReg) {
-      return toast.error("All documents are required");
+    if (!aadhaar || !pan || !selfie || !gst || !businessReg) {
+      return toast.error("All documents are required (Aadhaar, PAN, Selfie, GST, Business Registration)");
     }
 
     const formData = new FormData();
-    formData.append("aadhaarPan", aadhaarPan);
+    formData.append("aadhaar", aadhaar);
+    formData.append("pan", pan);
     formData.append("selfie", selfie);
     formData.append("gst", gst);
     formData.append("businessReg", businessReg);
@@ -135,12 +139,14 @@ const TraderKYC = () => {
 
       // Reset file inputs
       aadhaarRef.current.value = "";
+      panRef.current.value = "";
       selfieRef.current.value = "";
       gstRef.current.value = "";
       businessRef.current.value = "";
 
       // Reset state
-      setAadhaarPan(null);
+      setAadhaar(null);
+      setPan(null);
       setSelfie(null);
       setGst(null);
       setBusinessReg(null);
@@ -153,11 +159,18 @@ const TraderKYC = () => {
   };
 
   useEffect(() => {
-    if (!aadhaarPan) return setAadhaarPreview(null);
-    const url = URL.createObjectURL(aadhaarPan);
+    if (!aadhaar) return setAadhaarPreview(null);
+    const url = URL.createObjectURL(aadhaar);
     setAadhaarPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [aadhaarPan]);
+  }, [aadhaar]);
+
+  useEffect(() => {
+    if (!pan) return setPanPreview(null);
+    const url = URL.createObjectURL(pan);
+    setPanPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [pan]);
 
   useEffect(() => {
     if (!selfie) return setSelfiePreview(null);
@@ -233,11 +246,19 @@ const TraderKYC = () => {
               {(kycStatus === "not_submitted" || kycStatus === "rejected" || kycStatus === null) ? (
                 <form onSubmit={handleSubmit}>
                   <FileInput
-                    label="Aadhaar / PAN Card"
+                    label="Aadhaar Card *"
                     refEl={aadhaarRef}
-                    onChange={setAadhaarPan}
+                    onChange={setAadhaar}
                     preview={aadhaarPreview}
-                    file={aadhaarPan}
+                    file={aadhaar}
+                  />
+
+                  <FileInput
+                    label="PAN Card *"
+                    refEl={panRef}
+                    onChange={setPan}
+                    preview={panPreview}
+                    file={pan}
                   />
 
                   {/* Live Selfie Capture */}

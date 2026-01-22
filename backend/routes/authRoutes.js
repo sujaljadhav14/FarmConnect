@@ -54,6 +54,8 @@ router.get("/admin/dashboard", requireSignIn, isAdmin, (req, res) => {
 // Upload fields based on role
 const uploadFields = upload.fields([
   { name: "aadhaarPan", maxCount: 1 },
+  { name: "aadhaar", maxCount: 1 },
+  { name: "pan", maxCount: 1 },
   { name: "selfie", maxCount: 1 },
   { name: "landProof", maxCount: 1 },
   { name: "gst", maxCount: 1 },
