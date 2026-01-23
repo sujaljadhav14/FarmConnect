@@ -58,19 +58,27 @@ const transporterVehicleSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
-        vehicleImage: {
-            type: String,
-            trim: true,
-        },
         // Capacity Details
         loadCapacity: {
             type: Number,
+            required: true,
             min: 0,
         },
         loadCapacityUnit: {
             type: String,
             enum: ["kg", "quintal", "ton"],
             default: "kg",
+        },
+        // Pricing
+        baseFare: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+        farePerKm: {
+            type: Number,
+            required: true,
+            min: 0,
         },
         // Availability
         isActive: {
@@ -100,11 +108,19 @@ const transporterVehicleSchema = new mongoose.Schema(
     }
 );
 
-// // Indexes for better performance
-// transporterVehicleSchema.index({ transporterId: 1 });
-// transporterVehicleSchema.index({ vehicleNumber: 1 });
-// transporterVehicleSchema.index({ transporterId: 1, isActive: 1 });
-// transporterVehicleSchema.index({ "weightSlab.minWeight": 1, "weightSlab.maxWeight": 1 });
+// Indexes for better performance
+transporterVehicleSchema.index({ transporterId: 1 });
+transporterVehicleSchema.index({ vehicleNumber: 1 });
+transporterVehicleSchema.index({ transporterId: 1, isActive: 1 });
+transporterVehicleSchema.index({ "weightSlab.minWeight": 1, "weightSlab.maxWeight": 1 });
+
+// Validation: maxWeight should be greater than minWeight
+transporterVehicleSchema.pre("save", function (next) {
+    if (this.weightSlab.maxWeight <= this.weightSlab.minWeight) {
+        return next(new Error("Maximum weight must be greater than minimum weight"));
+    }
+    next();
+});
 
 const TransporterVehicle = mongoose.model("TransporterVehicle", transporterVehicleSchema);
 

@@ -9,6 +9,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -189,17 +190,17 @@ section h5 {
 }
 
 /* Header Styling */
-.vehicle-management-wrapper > div:first-child {
+.vehicle-management-wrapper>div:first-child {
     margin-bottom: 2rem;
 }
 
-.vehicle-management-wrapper > div:first-child h2 {
+.vehicle-management-wrapper>div:first-child h2 {
     font-size: 2rem;
     font-weight: 700;
     color: #28a745;
 }
 
-.vehicle-management-wrapper > div:first-child p {
+.vehicle-management-wrapper>div:first-child p {
     font-size: 1rem;
     color: #666;
 }

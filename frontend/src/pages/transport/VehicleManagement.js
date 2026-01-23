@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
-import { Plus, Pencil, Trash2, ExclamationCircle } from "react-bootstrap-icons";
+import { Plus, Edit, Trash2, AlertCircle } from "react-bootstrap-icons";
 import axios from "axios";
 import "../../styles/VehicleManagement.css";
 
@@ -21,14 +21,7 @@ const VehicleManagement = () => {
   const fetchVehicles = async () => {
     try {
       setLoading(true);
-      const authData = JSON.parse(localStorage.getItem("auth") || "{}");
-      const token = authData.token;
-
-      if (!token) {
-        setError("Authentication required. Please login again.");
-        navigate("/login");
-        return;
-      }
+      const token = localStorage.getItem("token");
       const response = await axios.get("/api/vehicles/my-vehicles", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -62,13 +55,7 @@ const VehicleManagement = () => {
     if (!vehicleToDelete) return;
 
     try {
-      const authData = JSON.parse(localStorage.getItem("auth") || "{}");
-      const token = authData.token;
-      if (!token) {
-        setError("Authentication required. Please login again.");
-        navigate("/login");
-        return;
-      }
+      const token = localStorage.getItem("token");
       const response = await axios.delete(
         `/api/vehicles/${vehicleToDelete._id}/delete`,
         {
@@ -93,13 +80,7 @@ const VehicleManagement = () => {
     try {
       const newStatus =
         currentStatus === "available" ? "maintenance" : "available";
-      const authData = JSON.parse(localStorage.getItem("auth") || "{}");
-      const token = authData.token;
-      if (!token) {
-        setError("Authentication required. Please login again.");
-        navigate("/login");
-        return;
-      }
+      const token = localStorage.getItem("token");
 
       const response = await axios.put(
         `/api/vehicles/${vehicleId}/availability`,
@@ -166,7 +147,7 @@ const VehicleManagement = () => {
           {/* Messages */}
           {error && (
             <div className="alert alert-danger alert-dismissible fade show" role="alert">
-              <ExclamationCircle size={20} className="me-2" />
+              <AlertCircle size={20} className="me-2" />
               {error}
               <button
                 type="button"
@@ -216,22 +197,12 @@ const VehicleManagement = () => {
                     </div>
 
                     <div className="card-body">
-                      {vehicle.vehicleImage && (
-                        <div className="mb-3 text-center">
-                          <img
-                            src={vehicle.vehicleImage}
-                            alt={vehicle.vehicleName}
-                            className="img-fluid rounded"
-                            style={{ maxHeight: "180px" }}
-                          />
-                        </div>
-                      )}
                       {/* Status Badge */}
                       <div className="mb-3">
                         <span
                           className={`badge bg-${vehicle.availabilityStatus === "available"
-                            ? "success"
-                            : "warning"
+                              ? "success"
+                              : "warning"
                             }`}
                         >
                           {vehicle.availabilityStatus === "available"
@@ -274,6 +245,16 @@ const VehicleManagement = () => {
                           </span>
                         </div>
 
+                        {/* Pricing */}
+                        <div className="detail-row">
+                          <span className="label">Base Fare:</span>
+                          <span className="value">₹{vehicle.baseFare}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Per KM Fare:</span>
+                          <span className="value">₹{vehicle.farePerKm}/km</span>
+                        </div>
+
                         {/* Certifications */}
                         <div className="detail-row">
                           <span className="label">Certifications:</span>
@@ -297,14 +278,14 @@ const VehicleManagement = () => {
                           className="btn btn-sm btn-outline-primary flex-grow-1"
                           onClick={() => handleEditVehicle(vehicle._id)}
                         >
-                          <Pencil size={16} className="me-1" />
+                          <Edit size={16} className="me-1" />
                           Edit
                         </button>
 
                         <button
                           className={`btn btn-sm flex-grow-1 ${vehicle.availabilityStatus === "available"
-                            ? "btn-outline-warning"
-                            : "btn-outline-success"
+                              ? "btn-outline-warning"
+                              : "btn-outline-success"
                             }`}
                           onClick={() =>
                             toggleAvailability(

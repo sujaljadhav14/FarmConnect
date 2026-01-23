@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
-import { GeoAlt, Calendar, Box, GraphUp, Truck, ExclamationCircle } from "react-bootstrap-icons";
+import { MapPin, Calendar, Package, TrendingUp, Truck, AlertCircle } from "react-bootstrap-icons";
 import axios from "axios";
 import "../../styles/AvailableOrders.css";
 
@@ -15,6 +15,7 @@ const AvailableOrders = () => {
   const [loadingVehicles, setLoadingVehicles] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [acceptingOrder, setAcceptingOrder] = useState(false);
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     fetchAvailableOrders();
@@ -90,7 +91,7 @@ const AvailableOrders = () => {
           vehicleId: selectedVehicle._id,
           vehicleType: selectedVehicle.vehicleType,
           vehicleNumber: selectedVehicle.vehicleNumber,
-          deliveryFee: 0,
+          deliveryFee: selectedVehicle.baseFare + selectedVehicle.farePerKm * 10, // Estimated fee
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -164,7 +165,7 @@ const AvailableOrders = () => {
           {/* Messages */}
           {error && (
             <div className="alert alert-danger alert-dismissible fade show" role="alert">
-              <ExclamationCircle size={20} className="me-2" />
+              <AlertCircle size={20} className="me-2" />
               {error}
               <button
                 type="button"
@@ -177,7 +178,7 @@ const AvailableOrders = () => {
           {/* Empty State */}
           {orders.length === 0 ? (
             <div className="text-center py-5">
-              <Box size={48} className="text-muted mb-3" />
+              <Package size={48} className="text-muted mb-3" />
               <h5 className="text-muted">No orders available</h5>
               <p className="text-muted">
                 Check back later when traders complete agreements with farmers
@@ -227,7 +228,7 @@ const AvailableOrders = () => {
 
                           <div className="order-info">
                             <div className="info-row">
-                              <Box size={16} className="me-2" />
+                              <Package size={16} className="me-2" />
                               <div>
                                 <small className="text-muted d-block">Quantity</small>
                                 <strong>
@@ -240,7 +241,7 @@ const AvailableOrders = () => {
                             </div>
 
                             <div className="info-row">
-                              <GraphUp size={16} className="me-2" />
+                              <TrendingUp size={16} className="me-2" />
                               <div>
                                 <small className="text-muted d-block">
                                   Total Price
@@ -252,7 +253,7 @@ const AvailableOrders = () => {
                             </div>
 
                             <div className="info-row">
-                              <GeoAlt size={16} className="me-2" />
+                              <MapPin size={16} className="me-2" />
                               <div>
                                 <small className="text-muted d-block">
                                   Delivery Location
@@ -330,7 +331,7 @@ const AvailableOrders = () => {
                         </div>
                       ) : suggestedVehicles.length === 0 ? (
                         <div className="alert alert-warning">
-                          <ExclamationCircle size={20} className="me-2" />
+                          <AlertCircle size={20} className="me-2" />
                           <strong>No suitable vehicles</strong>
                           <p className="mb-0 mt-2">
                             Please add a vehicle that can carry{" "}
@@ -355,8 +356,8 @@ const AvailableOrders = () => {
                               <div
                                 key={vehicle._id}
                                 className={`vehicle-option card mb-2 cursor-pointer ${selectedVehicle?._id === vehicle._id
-                                  ? "border-success"
-                                  : ""
+                                    ? "border-success"
+                                    : ""
                                   }`}
                                 onClick={() => setSelectedVehicle(vehicle)}
                                 style={{
@@ -406,36 +407,22 @@ const AvailableOrders = () => {
                                     </div>
                                   </div>
 
-                                  {vehicle.vehicleImage && (
-                                    <div className="mb-2 text-center">
-                                      <img
-                                        src={vehicle.vehicleImage}
-                                        alt={vehicle.vehicleName}
-                                        className="img-fluid rounded"
-                                        style={{ maxHeight: "140px" }}
-                                      />
-                                    </div>
-                                  )}
                                   <div className="row g-2 text-sm">
                                     <div className="col-6">
                                       <small className="text-muted">
-                                        Registration Cert.
+                                        Base Fare
                                       </small>
                                       <p className="mb-0">
-                                        <strong>
-                                          {vehicle.registrationCertificate || "-"}
-                                        </strong>
+                                        <strong>₹{vehicle.baseFare}</strong>
                                       </p>
                                     </div>
                                     <div className="col-6">
                                       <small className="text-muted">
-                                        Insurance/PUC
+                                        Per KM Fare
                                       </small>
                                       <p className="mb-0">
                                         <strong>
-                                          {vehicle.insuranceCertificate && vehicle.pollutionCertificate
-                                            ? "Provided"
-                                            : "Missing"}
+                                          ₹{vehicle.farePerKm}/km
                                         </strong>
                                       </p>
                                     </div>

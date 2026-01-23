@@ -13,9 +13,6 @@ import taskRoutes from "./routes/taskRoutes.js";
 import weatherRoutes from "./routes/weatherRoutes.js";
 import agreementRoutes from "./routes/agreementRoutes.js";
 import vehicleManagementRoutes from "./routes/vehicleManagementRoutes.js";
-import analyticsRoutes from "./routes/analyticsRoutes.js";
-import proposalRoutes from "./routes/proposalRoutes.js";
-import transactionRoutes from "./routes/transactionRoutes.js";
 import dbConnect from "./config/db.js";
 import path from "path";
 import { scheduleWeatherUpdates } from "./utils/weatherScheduler.js";
@@ -73,39 +70,16 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/agreements", agreementRoutes);
 app.use("/api/vehicles", vehicleManagementRoutes);
-app.use("/api/analytics", analyticsRoutes);
-app.use("/api/proposals", proposalRoutes);
-app.use("/api/transactions", transactionRoutes);
 
 const PORT = process.env.PORT || 8080;
 
-// Connect to database BEFORE starting server
-dbConnect()
-  .then(() => {
-    console.log("✅ Database connected successfully");
+server.listen(PORT, () => {
+  console.log(`App running at http://localhost:${PORT}`);
+});
 
-    server.listen(PORT, () => {
-      console.log(`✅ App running at http://localhost:${PORT}`);
-    });
+dbConnect();
 
-    // Start weather update scheduler
-    scheduleWeatherUpdates(io);
-    console.log("✅ Weather scheduler initialized");
-
-    // // Start market analytics scheduler (external market data pulls)
-    // import("./utils/analyticsScheduler.js").then((mod) => {
-    //   try {
-    //     mod.scheduleMarketPulls();
-    //     console.log("✅ Market scheduler initialized");
-    //   } catch (err) {
-    //     console.error("❌ Failed to initialize market scheduler:", err.message);
-    //   }
-    // }).catch((err) => {
-    //   console.error("❌ Failed to import market scheduler:", err.message);
-    // });
-  })
-  .catch((err) => {
-    console.error("❌ Database connection failed:", err.message);
-    process.exit(1);
-  });
+// Start weather update scheduler
+scheduleWeatherUpdates(io);
+console.log("Weather scheduler initialized");
 

@@ -6,13 +6,6 @@ import Crop from "../models/Crop.js";
 export const addVehicle = async (req, res) => {
     try {
         const transporterId = req.user._id;
-            console.log("\n🚗 Add Vehicle Request:");
-            console.log("   User ID:", transporterId);
-            console.log("   Body keys:", Object.keys(req.body));
-            console.log("   Vehicle Name:", req.body.vehicleName);
-            console.log("   Vehicle Number:", req.body.vehicleNumber);
-            console.log("   Has Image:", !!req.body.vehicleImage);
-        
         const {
             vehicleName,
             vehicleNumber,
@@ -24,9 +17,10 @@ export const addVehicle = async (req, res) => {
             registrationCertificate,
             insuranceCertificate,
             pollutionCertificate,
-            vehicleImage,
             loadCapacity,
             loadCapacityUnit,
+            baseFare,
+            farePerKm,
             notes,
         } = req.body;
 
@@ -49,31 +43,6 @@ export const addVehicle = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Maximum weight must be greater than minimum weight",
-            });
-        }
-
-        let parsedLoadCapacity = null;
-        if (loadCapacity) {
-            parsedLoadCapacity = parseFloat(loadCapacity);
-            if (isNaN(parsedLoadCapacity) || parsedLoadCapacity <= 0) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Load capacity must be a positive number",
-                });
-            }
-        }
-
-        if (!registrationCertificate || !insuranceCertificate) {
-            return res.status(400).json({
-                success: false,
-                message: "Registration and insurance certificates are required",
-            });
-        }
-
-        if (!vehicleImage) {
-            return res.status(400).json({
-                success: false,
-                message: "Vehicle photo is required",
             });
         }
 
@@ -100,9 +69,10 @@ export const addVehicle = async (req, res) => {
             registrationCertificate,
             insuranceCertificate,
             pollutionCertificate,
-            vehicleImage,
-            loadCapacity: parsedLoadCapacity,
+            loadCapacity: parseFloat(loadCapacity),
             loadCapacityUnit,
+            baseFare: parseFloat(baseFare),
+            farePerKm: parseFloat(farePerKm),
             notes,
         });
 
@@ -115,12 +85,10 @@ export const addVehicle = async (req, res) => {
         });
     } catch (error) {
         console.error("Add Vehicle Error:", error);
-            console.error("Error Stack:", error.stack);
         res.status(500).json({
             success: false,
             message: "Failed to add vehicle",
             error: error.message,
-                    details: error.toString(),
         });
     }
 };
@@ -220,12 +188,8 @@ export const updateVehicle = async (req, res) => {
         if (updates.vehicleName) vehicle.vehicleName = updates.vehicleName;
         if (updates.vehicleType) vehicle.vehicleType = updates.vehicleType;
         if (updates.yearOfManufacture) vehicle.yearOfManufacture = updates.yearOfManufacture;
-        if (updates.loadCapacity !== undefined) vehicle.loadCapacity = parseFloat(updates.loadCapacity);
-        if (updates.loadCapacityUnit) vehicle.loadCapacityUnit = updates.loadCapacityUnit;
-        if (updates.registrationCertificate !== undefined) vehicle.registrationCertificate = updates.registrationCertificate;
-        if (updates.insuranceCertificate !== undefined) vehicle.insuranceCertificate = updates.insuranceCertificate;
-        if (updates.pollutionCertificate !== undefined) vehicle.pollutionCertificate = updates.pollutionCertificate;
-        if (updates.vehicleImage) vehicle.vehicleImage = updates.vehicleImage;
+        if (updates.baseFare !== undefined) vehicle.baseFare = parseFloat(updates.baseFare);
+        if (updates.farePerKm !== undefined) vehicle.farePerKm = parseFloat(updates.farePerKm);
         if (updates.availabilityStatus) vehicle.availabilityStatus = updates.availabilityStatus;
         if (updates.isActive !== undefined) vehicle.isActive = updates.isActive;
         if (updates.lastMaintenanceDate) vehicle.lastMaintenanceDate = updates.lastMaintenanceDate;

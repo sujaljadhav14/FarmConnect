@@ -9,6 +9,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -285,13 +286,13 @@
 }
 
 /* Header */
-.available-orders-wrapper > div:first-child h2 {
+.available-orders-wrapper>div:first-child h2 {
     font-size: 1.8rem;
     font-weight: 700;
     color: #28a745;
 }
 
-.available-orders-wrapper > div:first-child p {
+.available-orders-wrapper>div:first-child p {
     color: #666;
     margin-bottom: 2rem;
 }

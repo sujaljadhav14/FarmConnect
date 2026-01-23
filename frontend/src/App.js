@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, NavLink } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegiserPage";
@@ -17,8 +17,6 @@ import FarmerKYC_Data from "./KYC/FarmerKYC_Data";
 import AdminKYC from "./KYC/AdminKYC";
 import TraderKYC from "./KYC/TraderKYC";
 import TraderKYC_Data from "./KYC/TraderKYC_Data";
-import TransporterKYC from "./KYC/TransporterKYC";
-import TransporterKYC_Data from "./KYC/TransporterKYC_Data";
 
 // Farmer Pages
 import AddCrop from "./pages/farmer/AddCrop";
@@ -29,20 +27,13 @@ import CommunityPage from "./pages/farmer/CommunityPage";
 import FarmCalendarPage from "./pages/farmer/FarmCalendarPage";
 import WeatherPage from "./pages/farmer/WeatherPage";
 import AgreementSign from "./pages/farmer/AgreementSign";
-import MarketPrices from "./pages/farmer/MarketPrices";
-import BankDetails from "./pages/farmer/BankDetails";
-import ViewProposals from "./pages/farmer/ViewProposals";
 
 // Trader Pages
 import BrowseCrops from "./pages/trader/BrowseCrops";
 import CropDetails from "./pages/trader/CropDetails";
 import PlaceOrder from "./pages/trader/PlaceOrder";
 import TraderMyOrders from "./pages/trader/MyOrders";
-import TraderOrderDetails from "./pages/trader/OrderDetails";
 import ConfirmAgreement from "./pages/trader/ConfirmAgreement";
-import TraderAnalytics from "./pages/trader/TraderAnalytics";
-import MakeProposal from "./pages/trader/MakeProposal";
-import MyProposals from "./pages/trader/MyProposals";
 
 // Transport Pages
 import AvailableDeliveries from "./pages/transport/AvailableDeliveries";
@@ -119,14 +110,6 @@ const App = () => {
           }
         />
         <Route
-          path="/farmer/my-orders"
-          element={
-            <RoleProtectedRoute role="farmer">
-              <FarmerMyOrders />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
           path="/farmer/order/:id"
           element={
             <RoleProtectedRoute role="farmer">
@@ -159,34 +142,10 @@ const App = () => {
           }
         />
         <Route
-          path="/farmer/market-prices"
-          element={
-            <RoleProtectedRoute role="farmer">
-              <MarketPrices />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/farmer/bank-details"
-          element={
-            <RoleProtectedRoute role="farmer">
-              <BankDetails />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
           path="/farmer/agreement/:orderId"
           element={
             <RoleProtectedRoute role="farmer">
               <AgreementSign />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/farmer/proposals/:cropId"
-          element={
-            <RoleProtectedRoute role="farmer">
-              <ViewProposals />
             </RoleProtectedRoute>
           }
         />
@@ -231,14 +190,6 @@ const App = () => {
           }
         />
         <Route
-          path="/trader/order/:id"
-          element={
-            <RoleProtectedRoute role="trader">
-              <TraderOrderDetails />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
           path="/trader/dashboard"
           element={
             <RoleProtectedRoute role="trader">
@@ -259,30 +210,6 @@ const App = () => {
           element={
             <RoleProtectedRoute role="trader">
               <TraderKYC_Data />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/trader/analytics"
-          element={
-            <RoleProtectedRoute role="trader">
-              <TraderAnalytics />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/trader/make-proposal/:cropId"
-          element={
-            <RoleProtectedRoute role="trader">
-              <MakeProposal />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/trader/my-proposals"
-          element={
-            <RoleProtectedRoute role="trader">
-              <MyProposals />
             </RoleProtectedRoute>
           }
         />
@@ -339,22 +266,6 @@ const App = () => {
           element={
             <RoleProtectedRoute role="transport">
               <MyDeliveries />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/transport/kyc"
-          element={
-            <RoleProtectedRoute role="transport">
-              <TransporterKYC />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/transport/kyc-data"
-          element={
-            <RoleProtectedRoute role="transport">
-              <TransporterKYC_Data />
             </RoleProtectedRoute>
           }
         />
