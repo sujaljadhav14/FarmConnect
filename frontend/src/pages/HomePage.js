@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/layout/Layout";
+import { useLanguage } from "../context/languageContext";
 
 const HomePage = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     try {
@@ -76,12 +78,10 @@ const HomePage = () => {
       >
         {/* Hero Section */}
         <h1 className="fw-bold text-success mb-3 display-5">
-          🌾 Welcome to FarmConnect 🌱
+          {t("homePage", "title")} 🌱
         </h1>
         <p className="text-muted mb-5 fs-5" style={{ maxWidth: "700px" }}>
-          FarmConnect is your digital bridge between farmers and traders! Our
-          goal is to ensure fair pricing, safe transactions, and faster payments
-          💸 while empowering farmers across rural areas 🌿.
+          {t("homePage", "subtitle")} - {t("homePage", "notLoggedIn")}
         </p>
 
         {/* User Greeting */}
@@ -91,11 +91,10 @@ const HomePage = () => {
             style={{ maxWidth: "500px" }}
           >
             <h5 className="text-success fw-semibold mb-2">
-              👋 Hello, {user.name || user.phone}!
+              👋 {t("homePage", "loginMessage")}, {user.name || user.phone}!
             </h5>
             <p className="text-muted mb-0">
-              You are logged in. Explore markets, manage your produce, and
-              connect with traders safely 🚜.
+              {t("homePage", "notLoggedIn")}
             </p>
           </div>
         )}

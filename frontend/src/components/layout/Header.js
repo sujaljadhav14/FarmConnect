@@ -2,12 +2,15 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
+import { useLanguage } from "../../context/languageContext";
+import LanguageButton from "./LanguageButton";
 import toast from "react-hot-toast";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { auth, setAuth } = useAuth();
+  const { t } = useLanguage();
 
   const handleLogout = () => {
     setAuth({ user: null, token: "" });
@@ -57,7 +60,7 @@ const Header = () => {
           <ul className="navbar-nav ms-auto align-items-lg-center">
             <li className="nav-item mx-lg-2">
               <Link className={`nav-link ${isActive("/")}`} to="/">
-                Home
+                {t("common", "home")}
               </Link>
             </li>
 
@@ -69,13 +72,13 @@ const Header = () => {
                     className={`nav-link ${isActive("/register")}`}
                     to="/register"
                   >
-                    Register
+                    {t("common", "register")}
                   </Link>
                 </li>
 
                 <li className="nav-item">
                   <Link className="btn btn-success px-3" to="/otp-login">
-                    Login
+                    {t("common", "login")}
                   </Link>
                 </li>
               </>
@@ -87,7 +90,7 @@ const Header = () => {
                     className={`nav-link ${isActive(getDashboardPath())}`}
                     to={getDashboardPath()}
                   >
-                    Dashboard
+                    {t("common", "dashboard")}
                   </Link>
                 </li>
 
@@ -114,13 +117,18 @@ const Header = () => {
                         className="dropdown-item text-danger fw-semibold"
                         onClick={handleLogout}
                       >
-                        Logout
+                        {t("common", "logout")}
                       </button>
                     </li>
                   </ul>
                 </li>
               </>
             )}
+
+            {/* Language Button */}
+            <li className="nav-item ms-lg-3">
+              <LanguageButton />
+            </li>
           </ul>
         </div>
       </div>

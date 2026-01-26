@@ -35,15 +35,15 @@ export const submitKYC = async (req, res) => {
       data.gst = req.files?.gst?.[0]?.filename || null;
       data.businessReg = req.files?.businessReg?.[0]?.filename || null;
     }
-      data.businessLicense = req.files?.businessLicense?.[0]?.filename || null;
-      data.companyName = req.body?.companyName || null;
-      data.gstNumber = req.body?.gstNumber || null;
-      data.transporterId = req.body?.transporterId || null;
-      data.rtoPermit = req.files?.rtoPermit?.[0]?.filename || null;
-      data.commercialPermit = req.files?.commercialPermit?.[0]?.filename || null;
+    data.businessLicense = req.files?.businessLicense?.[0]?.filename || null;
+    data.companyName = req.body?.companyName || null;
+    data.gstNumber = req.body?.gstNumber || null;
+    data.transporterId = req.body?.transporterId || null;
+    data.rtoPermit = req.files?.rtoPermit?.[0]?.filename || null;
+    data.commercialPermit = req.files?.commercialPermit?.[0]?.filename || null;
 
-      console.log("Transport data:", data);
-    }
+    console.log("Transport data:", data);
+
 
     // Validation
     if (!data.aadhaarDocument || !data.selfie) {
@@ -129,7 +129,7 @@ export const submitKYC = async (req, res) => {
     console.log("Creating new KYC with data:", data);
     const newKyc = await KYC.create(data);
     console.log("✅ KYC Created:", newKyc._id);
-    
+
     res.json({ message: "KYC submitted successfully", kycId: newKyc._id });
   } catch (error) {
     console.error("❌ KYC Error:", error.message);
